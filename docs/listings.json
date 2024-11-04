@@ -7,5 +7,13 @@
       "/posts/fsharp_02/index.html",
       "/posts/fsharp_01/index.html"
     ]
+  },
+  {
+    "listing": "/posts/fsharp_03/index.html",
+    "items": []
+  },
+  {
+    "listing": "/posts/fsharp_01/index.html",
+    "items": []
   }
 ]

@@ -2,6 +2,9 @@ project:
   type: website
   output-dir: docs
 
+listing:
+  fields: [date, title, description]
+
 website:
   title: "혼자서 배워보는 FP"
   navbar:
