@@ -1,5 +1,5 @@
 ---
-title: "F# - 강력한 실행 환경"
+title: "2. F# - 실행 환경"
 author: "Sangkon Han"
 date: "2024-11-04"
 categories: [F#, .NET]

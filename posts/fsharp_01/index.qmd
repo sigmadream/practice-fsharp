@@ -1,5 +1,5 @@
 ---
-title: "F# - 시작하기"
+title: "1. F# - 시작하기"
 author: "Sangkon Han"
 date: "2024-11-03"
 categories: [F#, .NET]

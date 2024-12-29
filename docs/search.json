@@ -9,9 +9,9 @@
   {
     "objectID": "posts/fsharp_04/index.html",
     "href": "posts/fsharp_04/index.html",
-    "title": "F# - 타입",
+    "title": "4. F# - 타입",
     "section": "",
-    "text": "간단하거나 단순한 사례에는 타입 추론을 적극적으로 사용하세요. 코드를 깔끔하고 간결하게 유지할 수 있습니다.\n복잡한 사례에는 타입을 명시적으로 작성하세요. 타입을 명시적으로 작성하고, 해당 타입에 대한 별도의 설명이나 사용 의도를 문서화하면 가독성과 유지 관리에 도움이 됩니다.\n\n\n\nF#은 int, float, bool과 같은 기본 타입은 물론 records, discriminated unions, tuples 같은 collection 타입을 지원합니다. F#의 타입 추론(type inference)은 값(value)에 따라 컴파일러가 타입을 추론합니다. 컴파일러가 값을 기반으로 변수의 유형을 추론할 수 있는 경우가 많지만, 타입을 명확히 하고 싶거나 모호한 경우 타입을 타입 주석(type annotation)을 사용해서 명시적으로 제공할 수도 있습니다. 타입 주석은 함수나 변수의 타입을 강제하여 오류를 방지할 수 있으므로 복잡한 함수를 정의할 때 유용합니다. F#에서 타입 추론과 타입 주석은 강력하고 표현력이 풍부한 코드를 작성하는 데 중요한 역할을 합니다.\n아래와 같이 기본 타입으로 구성되어, 간단한 경우에는 타입 추론을 활용하는 것을 권장합니다.\nlet hello = \"Hello, FP!\"\nlet e: float = 2.71\nlet isTrue: bool = true\n함수의 경우에도 정수에 대해 연산하는 + 연산자가 사용되었으므로 x와 y의 유형이 int라고 추론합니다. 함수의 타입은 int -&gt; int -&gt; int로 추론되며, 이는 두 개의 정수를 입력으로 받아 정수를 반환한다는 의미입니다. 이러한 타입 추론은 명시적인 유형 선언의 필요성을 줄여 코드를 더욱 간결하게 만듭니다.\nlet sum x y = x + y\n\n\n\nF#의 타입 추론은 강력하지만 명시적으로 타입을 표현해야 할 때가 있습니다. 타입 주석은 변수나 함수의 의도를 명시적으로 표현하여 타입을 기반으로 한 안전성을 보장합니다. 타입 주석은 변수, 함수, 함수 매개 변수 및 반환 값에 타입을 지정하는 데 사용합니다. 아래 예제에서는 width와 height의 유형이 명시적으로 float로 선언되어 있으며, getArea 함수의 반환 유형도 float로 지정되어 있습니다. 타입 주석은 함수 이름을 명시적으로 만들어주며, 문서화 및 복잡한 타입으로 작업할 때 유용합니다.\nlet getArea (width: float) (height: float) : float = width * height\n\n\n\nF#은 제네릭을 지원하며, 타입 주석을 사용하여 타입 매개변수를 지정할 수 있습니다. 이를 통해 다양한 타입으로 구성된 재사용 가능한 컴포넌트를 만들 수 있습니다. 예를 들어, 'a와 'b는 타입 매개 변수이고 swap은 x와 y의 값을 교환하는 함수입니다. 타입 주석 : 'b * 'a는 함수가 첫 번째 요소가 유형 ’b이고 두 번째 요소가 유형 ’a인 튜플을 반환하도록 지정합니다. 이는 일반 유형을 유형 어노테이션과 함께 활용하여 유연하고 재사용 가능한 코드를 만드는 방법을 보여줍니다. 해당 사항에 대해선 뒷부분에 좀 더 자세히 다루도록 하겠습니다.\nlet swap (x: 'a) (y: 'b) : 'b * 'a = (y, x)\nlet result = swap 5 \"Hello\"\nprintfn $\"{result}\"\n\n\nF#의 컬렉션의 컨텍스트에서 원소의 타입을 추론하므로 타입 추론이 원활하게 작동합니다. 예를 들어 정수 목록을 정의하면 F#은 해당 유형을 int 목록으로 추론합니다. 이 경우 F#은 목록 내의 요소를 기반으로 숫자가 int 목록 유형이라고 추론합니다. 이러한 유형 추론은 각 요소에 대한 명시적인 유형 주석 없이 컬렉션 작업을 하는 데 도움이 됩니다.\nlet number = [1; 2; 3; 4]\nprintfn $\"{number}\""
+    "text": "타입 추론을 적극적으로 사용하세요. 복잡하거나, 의도를 명확하게 알려주고 싶다면, 타입을 명시적으로 작성하세요. 해당 타입에 대한 별도의 설명이나 사용 의도를 문서화하면 가독성과 유지 관리에 도움이 됩니다.\n\nType Inferences\nF#은 int, float, bool과 같은 기본 타입은 물론 records, discriminated unions, tuples 같은 collection 타입을 지원합니다. F#의 타입 추론(type inference)은 값(value)에 따라 컴파일러가 타입을 추론합니다. 컴파일러가 값을 기반으로 변수의 유형을 추론할 수 있는 경우가 많지만, 타입을 명확히 하고 싶거나 모호한 경우 타입을 타입 주석(type annotation)을 사용해서 명시적으로 제공할 수도 있습니다. 타입 주석은 함수나 변수의 타입을 강제하여 오류를 방지할 수 있으므로 복잡한 함수를 정의할 때 유용합니다. F#에서 타입 추론과 타입 주석은 강력하고 표현력이 풍부한 코드를 작성하는 데 중요한 역할을 합니다.\n아래와 같이 기본 타입으로 구성되어, 간단한 경우에는 타입 추론을 활용하는 것을 권장합니다.\nlet hello = \"Hello, FP!\"\nlet e: float = 2.71\nlet isTrue: bool = true\n함수의 경우에도 정수에 대해 연산하는 + 연산자가 사용되었으므로 x와 y의 유형이 int라고 추론합니다. 함수의 타입은 int -&gt; int -&gt; int로 추론되며, 이는 두 개의 정수를 입력으로 받아 정수를 반환한다는 의미입니다. 이러한 타입 추론은 명시적인 유형 선언의 필요성을 줄여 코드를 더욱 간결하게 만듭니다.\nlet sum x y = x + y\n\n\nType Annotations\nF#의 타입 추론은 강력하지만 명시적으로 타입을 표현해야 할 때가 있습니다. 타입 주석은 변수나 함수의 의도를 명시적으로 표현하여 타입을 기반으로 한 안전성을 보장합니다. 타입 주석은 변수, 함수, 함수 매개 변수 및 반환 값에 타입을 지정하는 데 사용합니다. 아래 예제에서는 width와 height의 유형이 명시적으로 float로 선언되어 있으며, getArea 함수의 반환 유형도 float로 지정되어 있습니다. 타입 주석은 함수 이름을 명시적으로 만들어주며, 문서화 및 복잡한 타입으로 작업할 때 유용합니다.\nlet getArea (width: float) (height: float) : float = width * height\n\n\nType Annotations with Generics\nF#은 제네릭을 지원하며, 타입 주석을 사용하여 타입 매개변수를 지정할 수 있습니다. 이를 통해 다양한 타입으로 구성된 재사용 가능한 컴포넌트를 만들 수 있습니다. 예를 들어, 'a와 'b는 타입 매개 변수이고 swap은 x와 y의 값을 교환하는 함수입니다. 타입 주석 : 'b * 'a는 함수가 첫 번째 요소가 유형 ’b이고 두 번째 요소가 유형 ’a인 튜플을 반환하도록 지정합니다. 이는 일반 유형을 유형 어노테이션과 함께 활용하여 유연하고 재사용 가능한 코드를 만드는 방법을 보여줍니다. 해당 사항에 대해선 뒷부분에 좀 더 자세히 다루도록 하겠습니다.\nlet swap (x: 'a) (y: 'b) : 'b * 'a = (y, x)\nlet result = swap 5 \"Hello\"\nprintfn $\"{result}\"\n\nType Inference with Collections\nF#의 컬렉션의 컨텍스트에서 원소의 타입을 추론하므로 타입 추론이 원활하게 작동합니다. 예를 들어 정수 목록을 정의하면 F#은 해당 유형을 int 목록으로 추론합니다. 이 경우 F#은 목록 내의 요소를 기반으로 숫자가 int 목록 유형이라고 추론합니다. 이러한 유형 추론은 각 요소에 대한 명시적인 유형 주석 없이 컬렉션 작업을 하는 데 도움이 됩니다.\nlet number = [1; 2; 3; 4]\nprintfn $\"{number}\"\n\n\n\n\n\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/fsharp_04/index.html#summary",
@@ -23,7 +23,7 @@
   {
     "objectID": "posts/fsharp_01/index.html",
     "href": "posts/fsharp_01/index.html",
-    "title": "F# - 시작하기",
+    "title": "1. F# - 시작하기",
     "section": "",
     "text": "개발자가 특정 언어를 선택하는 것은 프로젝트의 성패에 영향을 미치곤 합니다. 그러나 학습이나 재미를 위해서 혹은 효율이나 생산성과 전혀 관련없지만 ’힙(hip)’한 어떤 것을 선택할 때가 있습니다. 불과 얼마전까지만 해도 학자들의 언어, 혹은 대학원생의 언어로 불렸던 Haskell, Prolog 같은 언어들이 블럭체인이나 머신러닝 등에 활용되고 있다는 것이 대표적인 예 입니다. 효율적인 데이터 처리와 정확한 계산에 대한 수요가 증가함에 따라 비효율적인 언어의 대명사처럼 알려진 함수형 언어에 대한 관심이 높아졌습니다. 함수형 언어는 가파른 학습 곡선으로 인해서 연구용 언어로 취급되었지만 지금은 많은 개발자들이 “효율”과 “안전”을 위해서 선택하기도 합니다. 함수형과 객체지향 프로그래밍 패러다임이 결합되어 나름의 장점을 뽐내는 방법을 고민하고 있습니다. 이를 통해 단순성, 효율성 그리고 안정성을 추구하기도 합니다.\n새로운 프로그래밍 기법을 연습하기 위해서 .NET 플랫폼의 함수형 언어인 F#을 가볍게 배워볼 생각입니다. F#은 복잡한 작업을 간결하고 효과적으로 처리할 수 있을 뿐만 아니라, 개발 관련된 환경이 잘 구성되어 있습니다. F#을 활용해서 불변성, 일급 함수 등 함수형 언어가 제시하는 다양한 개념을 연습할 수 있도록 구성하였습니다. 이러한 연습 혹은 수련을 통해서 함수형 언어를 조금 쉽게 접근할 수 있기를 희망합니다.\nF#을 선택한 이유는 .NET 환경과 원활한 통합입니다. .NET 플랫폼의 일부인 F#은 다양한 라이브러리 및 도구를 제공하기 때문에 Microsoft 기술 스택에 익숙한 개발자에게 완벽한 선택이 될 수 있습니다. F#은 함수형 프로그래밍에 관심이 있는 초급 개발자에서 기존의 중규모 서비스를 개선하기 위한 분들까지 배워볼만한 실용적인 언어라 할 수 있습니다. 혹은 그렇게 되길 희망합니다.\n\n\n\n\n\n\n\n\n\nNo matching items"
   },
@@ -32,7 +32,7 @@
     "href": "index.html",
     "title": "함수형 언어 배워보기",
     "section": "",
-    "text": "F# - 변수\n\n\n\n\n\n\n\n\n\n\n\nNov 5, 2024\n\n\n\n\n\n\n\nF# - 타입\n\n\n\n\n\n\n\n\n\n\n\nNov 5, 2024\n\n\n\n\n\n\n\nF# - 강력한 실행 환경\n\n\n\n\n\n\n\n\n\n\n\nNov 4, 2024\n\n\n\n\n\n\n\nF# - 시작하기\n\n\n\n\n\n\n\n\n\n\n\nNov 3, 2024\n\n\n\n\n\n\nNo matching items"
+    "text": "F# - 변수\n\n\n\n\n\n\n\n\n\n\n\nNov 5, 2024\n\n\n\n\n\n\n\n4. F# - 타입\n\n\n\n\n\n\n\n\n\n\n\nNov 5, 2024\n\n\n\n\n\n\n\n2. F# - 실행 환경\n\n\n\n\n\n\n\n\n\n\n\nNov 4, 2024\n\n\n\n\n\n\n\n1. F# - 시작하기\n\n\n\n\n\n\n\n\n\n\n\nNov 3, 2024\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/fsharp_03/index.html",
@@ -44,14 +44,14 @@
   {
     "objectID": "posts/fsharp_02/index.html",
     "href": "posts/fsharp_02/index.html",
-    "title": "F# - 강력한 실행 환경",
+    "title": "2. F# - 실행 환경",
     "section": "",
     "text": "F#을 학습하기 위해선 VS2022를 설치하는 것이 가장 좋은 방법입니다. VS2022는 디버거를 비롯해서 .NET 개발에 필요한 모든 도구를 지원하고 있습니다. 하지만, VS2022는 윈도우 사용자만 사용할 수 있기 때문에 당분간은 VSCode를 사용해서 해당 튜토리얼을 진행하고자 합니다. 그리고 .NET 등이 어색한 분들을 위해서 VSCode의 Polyglot Notebook를 활용하도록 하겠습니다."
   },
   {
     "objectID": "posts/fsharp_02/index.html#실행-환경",
     "href": "posts/fsharp_02/index.html#실행-환경",
-    "title": "F# - 강력한 실행 환경",
+    "title": "2. F# - 실행 환경",
     "section": "실행 환경",
     "text": "실행 환경\n\nVS2022 활용\n앞선 소개에서 말씀드렸다 싶이, VS2022를 설치해서 F# 관련 프로젝트를 생성하는 것이 가장 좋은 방법입니다. Microsoft에서 제공하는 문서나 다른 교재 등에선 ’Hello, World!’를 출력하기 위해서 함수 및 이름공간(Namespace)을 정의하는 것부터 먼저 학습을 진행합니다. 예를 들어, 아래 코드에서 확인할 수 있듯이 간단한 문자열을 출력하기 위해선 조금은 복잡한 과정(moduel, let, 0)과 지식이 요구됩니다\n// main.fs\nmodule FsharpLearnSyntax\n\n[&lt;EntryPoint&gt;]\nlet main argv =\n    printfn \"Hello, World!\"\n    0\n\n\nInteractive!\nF#의 코드만 빠르게 실행하기 위해선 .NET에서 제공하는 Interactive를 활용하면 main.fs 같은 코드를 작성하지 않고, 간단하고 빠르게 진행할 수 있습니다. main.fsx 파일을 아래와 같이 작성하세요.\n// main.fsx\nprintfn \"Hello, World!\"\n해당 파일을 실행하기 위해서 아래 명령어를 커맨드 라인으로 실행해주세요.\ndotnet fsi main.fsx\n\n\nPolyglot Noteobook\nVSCode를 사용하면, Python의 ipynb와 같은 Polyglot Noteobook을 활용할 수 있습니다. 설치와 관련된 내용은 해당 저장소의 README.md 파일을 참고하세요.\n\n\n\nPolyglot Noteobook"
   }
