@@ -1,23 +1,46 @@
 project:
   type: website
   output-dir: docs
-
-listing:
-  fields: [date, title, description]
+  render:
+    - "*.qmd"
+    - "*.ipynb"
+    - "!slides/"
+    - "!_ing"
+  preview:
+    port: 3000
+    browser: false    
 
 website:
-  title: "혼자서 배워보는 FP"
+  title: "F#"
+  description: "Learn F# with MVP!"
+  twitter-card: true
+  open-graph: true
+  page-navigation: true
+  repo-branch: main
+  repo-url: https://github.com/sigmadream/practice-fsharp
+  repo-actions: [issue]  
+  back-to-top-navigation: true
+  page-footer: "Copyright 2024, Sangkon Han" 
   navbar:
-    right:
-      - about.qmd
+    search: true
+    right:      
       - icon: github
-        href: https://github.com/
-      - icon: twitter
-        href: https://twitter.com
+        href: https://github.com/sigmadream/practice-fsharp
+  sidebar:
+    style: "floating"
+
+metadata-files:
+  - sidebar.yml
+
+bibliography: references.bib
+
 format:
   html:
     theme: cosmo
     css: styles.css
-
-
-
+    toc: true
+  # pdf:
+  #   documentclass: article
+  #   include-in-header:
+  #     text: |
+  #       \usepackage{kotex}

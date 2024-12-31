@@ -2,14 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.32">
+<meta name="generator" content="quarto-1.6.39">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sangkon Han">
-<meta name="dcterms.date" content="2024-11-04">
+<meta name="dcterms.date" content="2024-11-05">
 
-<title>F# - 강력한 실행 환경 – 혼자서 배워보는 FP</title>
+<title>F# - 변수 – F#</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -59,22 +59,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
-<script src="../../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../../">
-<script src="../../site_libs/quarto-html/quarto.js"></script>
-<script src="../../site_libs/quarto-html/popper.min.js"></script>
-<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2486e1f0a3ee9ee1fc393803a1361cdb.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-c1a4d6e86efe26d6708da431a5ab5c58.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../notes/fsharp04.html" rel="next">
+<link href="../notes/fsharp02.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-ddd961a2510921635943dfbbd19534c4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -104,18 +106,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }</script>
 
 
-<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../styles.css">
+<meta property="og:title" content="F# - 변수 – F#">
+<meta property="og:description" content="Learn F# with MVP!">
+<meta property="og:site_name" content="F#">
+<meta name="twitter:title" content="F# - 변수 – F#">
+<meta name="twitter:description" content="Learn F# with MVP!">
+<meta name="twitter:card" content="summary">
 </head>
 
-<body class="nav-fixed fullcontent">
+<body class="nav-sidebar floating nav-fixed">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+  <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="../../index.html">
-    <span class="navbar-title">혼자서 배워보는 FP</span>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">F#</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -124,17 +132,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="../../about.html"> 
-<span class="menu-text">About</span></a>
-  </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/"> <i class="bi bi-github" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://twitter.com"> <i class="bi bi-twitter" role="img">
+    <a class="nav-link" href="https://github.com/sigmadream/practice-fsharp"> <i class="bi bi-github" role="img">
 </i> 
 <span class="menu-text"></span></a>
   </li>  
@@ -144,88 +143,155 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
       </div> <!-- /container-fluid -->
     </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../notes/fsharp03.html">F# - 변수</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
 </header>
 <!-- content -->
-<header id="title-block-header" class="quarto-title-block default page-columns page-full">
-  <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-body">
-      <h1 class="title">F# - 강력한 실행 환경</h1>
-                                <div class="quarto-categories">
-                <div class="quarto-category">F#</div>
-                <div class="quarto-category">.NET</div>
-              </div>
-                  </div>
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/fsharp01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">F# - 시작하기</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/fsharp02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">F# - 강력한 실행 환경</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/fsharp03.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">F# - 변수</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/fsharp04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">F# - 타입</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/fsharp05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">F# - 함수, 함수, 그리고 함수</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#summary" id="toc-summary" class="nav-link active" data-scroll-target="#summary">Summary</a></li>
+  <li><a href="#변수" id="toc-변수" class="nav-link" data-scroll-target="#변수">변수</a>
+  <ul class="collapse">
+  <li><a href="#scoping" id="toc-scoping" class="nav-link" data-scroll-target="#scoping">Scoping</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/sigmadream/practice-fsharp/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">F# - 변수</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">F#,</div>
+    <div class="quarto-category">.NET</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Sangkon Han </p>
+          </div>
   </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">November 5, 2024</p>
+    </div>
+  </div>
   
-  <div class="quarto-title-meta">
-
-      <div>
-      <div class="quarto-title-meta-heading">Author</div>
-      <div class="quarto-title-meta-contents">
-               <p>Sangkon Han </p>
-            </div>
-    </div>
-      
-      <div>
-      <div class="quarto-title-meta-heading">Published</div>
-      <div class="quarto-title-meta-contents">
-        <p class="date">November 4, 2024</p>
-      </div>
-    </div>
     
-      
-    </div>
-    
+  </div>
   
-  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
-<!-- sidebar -->
-<!-- margin-sidebar -->
-    
-<!-- main -->
-<main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
+</header>
 
 
-
-<p>F#을 학습하기 위해선 VS2022를 설치하는 것이 가장 좋은 방법입니다. VS2022는 디버거를 비롯해서 <code>.NET</code> 개발에 필요한 모든 도구를 지원하고 있습니다. 하지만, VS2022는 윈도우 사용자만 사용할 수 있기 때문에 당분간은 VSCode를 사용해서 해당 튜토리얼을 진행하고자 합니다. 그리고 <code>.NET</code> 등이 어색한 분들을 위해서 VSCode의 Polyglot Notebook를 활용하도록 하겠습니다.</p>
-<section id="실행-환경" class="level2">
-<h2 class="anchored" data-anchor-id="실행-환경">실행 환경</h2>
-<section id="vs2022-활용" class="level3">
-<h3 class="anchored" data-anchor-id="vs2022-활용">VS2022 활용</h3>
-<p>앞선 소개에서 말씀드렸다 싶이, VS2022를 설치해서 F# 관련 프로젝트를 생성하는 것이 가장 좋은 방법입니다. Microsoft에서 제공하는 문서나 다른 교재 등에선 ’Hello, World!’를 출력하기 위해서 함수 및 이름공간(Namespace)을 정의하는 것부터 먼저 학습을 진행합니다. 예를 들어, 아래 코드에서 확인할 수 있듯이 간단한 문자열을 출력하기 위해선 조금은 복잡한 과정(<code>moduel</code>, <code>let</code>, <code>0</code>)과 지식이 요구됩니다</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode fsharp code-with-copy"><code class="sourceCode fsharp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>//<span class="co"> main.fs</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ot">module</span> FsharpLearnSyntax</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="op">[&lt;</span>EntryPoint<span class="op">&gt;]</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> main argv =</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    printfn <span class="st">"Hello, World!"</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="dv">0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>F#에서 변수는 기본적으로 불변(immutable)이며, let 키워드를 사용해 정의한 후에는 값을 변경할 수 없다. 필요한 경우에는 mutable 키워드를 통해 변경 가능한 변수를 정의할 수 있지만, 불변 구조가 제공하는 예측 가능성과 안정성 때문에 함수형 프로그래밍에서는 주로 불변성을 활용한다. 리스트와 튜플, 레코드 같은 F#의 데이터 구조도 기본적으로 불변이며, 기존 데이터를 바꾸지 않고 새로운 값이나 데이터 구조를 만들어내는 방식으로 동작한다. 이러한 불변성은 멀티스레딩 환경에서도 안전하고, 구조 공유와 영구 데이터 구조 등의 최적화를 통해 효율적으로 관리된다. 변수의 범위(scope)는 정의된 위치에 따라 결정되며, 변수 가려짐(variable shadowing)이 발생할 수도 있으므로 신중하게 사용해야 한다.</p>
 </section>
-<section id="interactive" class="level3">
-<h3 class="anchored" data-anchor-id="interactive">Interactive!</h3>
-<p>F#의 코드만 빠르게 실행하기 위해선 <code>.NET</code>에서 제공하는 <code>Interactive</code>를 활용하면 <code>main.fs</code> 같은 코드를 작성하지 않고, 간단하고 빠르게 진행할 수 있습니다. <code>main.fsx</code> 파일을 아래와 같이 작성하세요.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode fsharp code-with-copy"><code class="sourceCode fsharp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>//<span class="co"> main.fsx</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>printfn <span class="st">"Hello, World!"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>해당 파일을 실행하기 위해서 아래 명령어를 커맨드 라인으로 실행해주세요.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dotnet</span> fsi main.fsx</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="polyglot-noteobook" class="level3">
-<h3 class="anchored" data-anchor-id="polyglot-noteobook">Polyglot Noteobook</h3>
-<p>VSCode를 사용하면, Python의 <code>ipynb</code>와 같은 Polyglot Noteobook을 활용할 수 있습니다. 설치와 관련된 내용은 해당 저장소의 <code>README.md</code> 파일을 참고하세요.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="fsharp_02_a.png" class="img-fluid figure-img"></p>
-<figcaption>Polyglot Noteobook</figcaption>
-</figure>
-</div>
+<section id="변수" class="level2">
+<h2 class="anchored" data-anchor-id="변수">변수</h2>
+<p>변수 정의는 모든 언어에서 가장 중요한 작업입니다. 문제를 해결하는데 토대를 마련하는 기본적인 도구입니다. F#은 변수는 값을 변하지 않습니다. F#에서 변수와 함수는 일반적으로 <code>let</code> 키워드를 사용하여 정의합니다. 불변이란 의미는 변수에 값이 할당된 후에는 값을 변경 할 수 없습니다.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode fsharp code-with-copy"><code class="sourceCode fsharp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> e = <span class="fl">2.71</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>//<span class="co"> e &lt;- 3.14 // 오류 발생</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>printfn $<span class="st">"{e}!"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>F#은 필요한 경우 변경 가능한 변수를 생성하는 방법을 제공합니다. 이 작업은 <code>mutable</code> 키워드를 사용하여 수행됩니다.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode fsharp code-with-copy"><code class="sourceCode fsharp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> <span class="kw">mutable</span> e = <span class="fl">2.71</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>//<span class="co"> e &lt;- 3.14 // 오류 발생</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>printfn $<span class="st">"{e}!"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>불변성은 F#의 데이터 구조에 영향을 미칩니다. 리스트, 튜플 및 레코드는 기본적으로 불변입니다. <code>@</code>연산은 <code>number</code>에 <code>[5; 6]</code>을 추가하여 concatNumber를 새롭게 생성합니다. 기존의 number 리스트는 변경되지 않고 유지되므로 불변성의 원리가 작동하는 것을 알 수 있습니다. 예를 들어, 변하지 않는 변수는 확정적인 값을 제공합니다. 불변성은 기존 값을 수정하지 않고 새로운 값을 반환하는 함수형 프로그래밍 원칙입니다.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode fsharp code-with-copy"><code class="sourceCode fsharp"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> number = <span class="op">[</span><span class="dv">1</span>; <span class="dv">2</span>; <span class="dv">3</span>; <span class="dv">4</span><span class="op">]</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> concatNumber = number @ <span class="op">[</span><span class="dv">5</span>; <span class="dv">6</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>불변성은 메모리 혹은 연산의 오버헤드를 발생하는 것처럼 보입니다. 하지만, 이러한 방식은 더 효율적이고 예측 가능한 코드를 제공합니다. 불변 데이터 구조는 본질적으로 스레드에 안전하므로 동시 수정에 대한 걱정 없이 여러 스레드에서 공유할 수 있습니다. 또한 F#을 비롯한 많은 함수형 프로그래밍 언어에서는 구조 공유(structural sharing) 및 영구 데이터 구조(persistent data structures)와 같은 고급 최적화를 활용하여 불변 데이터를 효율적으로 관리합니다. F#은 패턴 매칭, 고차 함수 및 함수 합성과 같은 불변성에 기반한 함수형 기법을 활용하고, 해야 합니다. 불변성은 데이터 구조가 사용 내내 일관성을 유지하도록 함으로써 이러한 기술을 단순화합니다. 함수형 언어에서 불변성은 옵션이 아니라 필수라 할 수 있습니다.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode fsharp code-with-copy"><code class="sourceCode fsharp"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> ogList = <span class="op">[</span><span class="dv">1</span>; <span class="dv">2</span>; <span class="dv">3</span><span class="op">]</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> edList = <span class="dv">0</span> :: ogList</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="scoping" class="level3">
+<h3 class="anchored" data-anchor-id="scoping">Scoping</h3>
+<p>F#에서 변수는 값에 바인딩(biding)되며, 그 범위(scope)는 변수가 정의된 위치에 따라 결정됩니다. 변수의 범위는 변수가 선언된 코드 블록에 국한됩니다.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode fsharp code-with-copy"><code class="sourceCode fsharp"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> outerName = <span class="st">"I am Jone Doe"</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> printName<span class="op">()</span> =</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> innerName = <span class="st">"I am Jane Doe"</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    printfn $<span class="st">"{outerName}"</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    printfn $<span class="st">"{innerName}"</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>printName<span class="op">()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>변수 가려짐(variable shadowing)은 새 변수가 기존 변수와 같은 이름으로 정의되어 특정 범위 내에서 이전 변수를 숨길 때 발생합니다. 예를 들어 아래 예제에서 함수 내부에 정의된 <code>x</code>는 외부 <code>x</code>를 가립니다. 그 결과 내부 <code>x</code>는 10의 값을 가지지만 외부 <code>x</code>는 5로 유지됩니다. 변수의 가림 효과는 변수 범위를 제한하고 의도하지 않은 부작용을 방지하는 데 유용한 기법이지만 코드 명확성을 유지하기 위해 신중하게 사용해야 합니다.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode fsharp code-with-copy"><code class="sourceCode fsharp"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> x = <span class="dv">5</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> showX<span class="op">()</span> =</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> x = <span class="dv">10</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    printfn $<span class="st">"Inner x: {x}"</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>printfn $<span class="st">"Outer x: {x}"</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>showX<span class="op">()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>모든 언어는 변수와 변수의 영역에 관한 규칙을 올바르게 이해하고 있어야 합니다. F# 또한 예외가 아닙니다. 변수의 영역 규칙은 코드 내에서 데이터가 전달되고 수정되는 방식에 영향을 줍니다. 변수의 영역 규칙을 명확하고 유지 관리가 쉽도록 작성해야 합니다.</p>
 
 
 </section>
 </section>
 
-</main> <!-- /main -->
+<a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -308,8 +374,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -420,7 +484,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
@@ -646,7 +709,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../notes/fsharp02.html" class="pagination-link" aria-label="F# - 강력한 실행 환경">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">F# - 강력한 실행 환경</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../notes/fsharp04.html" class="pagination-link" aria-label="F# - 타입">
+        <span class="nav-page-text">F# - 타입</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Copyright 2024, Sangkon Han</p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sigmadream/practice-fsharp/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
 
 
 
