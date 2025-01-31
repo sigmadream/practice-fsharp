@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="F#의 데이터 흐름 프로그래밍은 비동기 처리, 병렬 데이터 처리, 메시지 기반 에이전트 시스템, 이벤트 기반 시스템을 결합하여 효율적인 데이터 처리를 가능하게 한다. 데이터 파이프라인을 활용하여 실시간 데이터 처리, 웹 스크래핑, 로그 분석, 금융 데이터 분석 등의 복잡한 작업을 명확하고 선언적인 방식으로 수행할 수 있다. 비동기 및 병렬 처리를 적극적으로 활용하면 응답성 향상, 성능 최적화, 확장성 확보가 가능하며, 이를 통해 다양한 실제 응용 프로그램에서 안정적이고 강력한 데이터 흐름 기반 시스템을 구축할 수 있다.">
+
+<title>데이터 흐름 프로그래밍 – F# with -sd-</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../notes/fsharp_13.html" rel="next">
+<link href="../notes/fsharp_11.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-fad5ab29a14bbe0a7a7d29177f3f13bb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+<meta property="og:title" content="데이터 흐름 프로그래밍 – F# with -sd-">
+<meta property="og:description" content="F#의 데이터 흐름 프로그래밍은 비동기 처리, 병렬 데이터 처리, 메시지 기반 에이전트 시스템, 이벤트 기반 시스템을 결합하여 효율적인 데이터 처리를 가능하게 한다. 데이터 파이프라인을 활용하여 실시간 데이터 처리, 웹 스크래핑, 로그 분석, 금융 데이터 분석 등의 복잡한 작업을 명확하고 선언적인 방식으로 수행할 수 있다. 비동기 및 병렬 처리를 적극적으로 활용하면 응답성 향상, 성능 최적화, 확장성 확보가 가능하며, 이를 통해 다양한 실제 응용 프로그램에서 안정적이고 강력한 데이터 흐름 기반 시스템을 구축할 수 있다.">
+<meta property="og:site_name" content="F# with -sd-">
+<meta name="twitter:title" content="데이터 흐름 프로그래밍 – F# with -sd-">
+<meta name="twitter:description" content="F#의 데이터 흐름 프로그래밍은 비동기 처리, 병렬 데이터 처리, 메시지 기반 에이전트 시스템, 이벤트 기반 시스템을 결합하여 효율적인 데이터 처리를 가능하게 한다. 데이터 파이프라인을 활용하여 실시간 데이터 처리, 웹 스크래핑, 로그 분석, 금융 데이터 분석 등의 복잡한 작업을 명확하고 선언적인 방식으로 수행할 수 있다. 비동기 및 병렬 처리를 적극적으로 활용하면 응답성 향상, 성능 최적화, 확장성 확보가 가능하며, 이를 통해 다양한 실제 응용 프로그램에서 안정적이고 강력한 데이터 흐름 기반 시스템을 구축할 수 있다.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">F# with -sd-</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../notes/fsharp_01.html">F# 기초</a></li><li class="breadcrumb-item"><a href="../notes/fsharp_12.html">데이터 흐름 프로그래밍</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">F#을 배워보자</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">F# 기초</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/fsharp_01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">F# 시작하기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/fsharp_02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">조건식과 패턴 매칭</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/fsharp_03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">컬렉션 및 데이터 구조</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/fsharp_04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">루프, 반복 및 함수형 대안</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/fsharp_05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">클래스, 열거형 및 객체 지향</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/fsharp_06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">모듈, 접근자 및 코드 구성</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/fsharp_07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">선언적 프로그래밍</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/fsharp_08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">명령형 프로그래밍 및 상태 관리</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/fsharp_09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">제네릭 프로그래밍</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/fsharp_10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">객체 지향 프로그래밍</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/fsharp_11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">함수형 프로그래밍</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/fsharp_12.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">데이터 흐름 프로그래밍</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/fsharp_13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">비동기 프로그래밍</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/fsharp_14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">동시성 프로그래밍</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#데이터-흐름-개념-소개-introduction-to-dataflow-concepts" id="toc-데이터-흐름-개념-소개-introduction-to-dataflow-concepts" class="nav-link active" data-scroll-target="#데이터-흐름-개념-소개-introduction-to-dataflow-concepts">1. 데이터 흐름 개념 소개 (Introduction to Dataflow Concepts)</a></li>
+  <li><a href="#데이터-파이프라인-및-에이전트-구현-implementing-data-pipelines-and-agents" id="toc-데이터-파이프라인-및-에이전트-구현-implementing-data-pipelines-and-agents" class="nav-link" data-scroll-target="#데이터-파이프라인-및-에이전트-구현-implementing-data-pipelines-and-agents">2. 데이터 파이프라인 및 에이전트 구현 (Implementing Data Pipelines and Agents)</a></li>
+  <li><a href="#병렬-및-비동기-데이터-처리-처리-handling-parallel-and-asynchronous-data-processing" id="toc-병렬-및-비동기-데이터-처리-처리-handling-parallel-and-asynchronous-data-processing" class="nav-link" data-scroll-target="#병렬-및-비동기-데이터-처리-처리-handling-parallel-and-asynchronous-data-processing">3. 병렬 및 비동기 데이터 처리 처리 (Handling Parallel and Asynchronous Data Processing)</a></li>
+  <li><a href="#f-데이터-흐름-애플리케이션-사례-연구-case-studies-of-dataflow-applications-in-f" id="toc-f-데이터-흐름-애플리케이션-사례-연구-case-studies-of-dataflow-applications-in-f" class="nav-link" data-scroll-target="#f-데이터-흐름-애플리케이션-사례-연구-case-studies-of-dataflow-applications-in-f">4. F# 데이터 흐름 애플리케이션 사례 연구 (Case Studies of Dataflow Applications in F#)</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../notes/fsharp_01.html">F# 기초</a></li><li class="breadcrumb-item"><a href="../notes/fsharp_12.html">데이터 흐름 프로그래밍</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">데이터 흐름 프로그래밍</h1>
+<p class="subtitle lead">Dataflow Programming</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">Dataflow</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    <p>F#의 데이터 흐름 프로그래밍은 <strong>비동기 처리, 병렬 데이터 처리, 메시지 기반 에이전트 시스템, 이벤트 기반 시스템</strong>을 결합하여 효율적인 데이터 처리를 가능하게 한다. 데이터 파이프라인을 활용하여 <strong>실시간 데이터 처리, 웹 스크래핑, 로그 분석, 금융 데이터 분석</strong> 등의 복잡한 작업을 명확하고 선언적인 방식으로 수행할 수 있다. 비동기 및 병렬 처리를 적극적으로 활용하면 <strong>응답성 향상, 성능 최적화, 확장성 확보</strong>가 가능하며, 이를 통해 다양한 실제 응용 프로그램에서 안정적이고 강력한 데이터 흐름 기반 시스템을 구축할 수 있다.</p>
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="데이터-흐름-개념-소개-introduction-to-dataflow-concepts" class="level3">
+<h3 class="anchored" data-anchor-id="데이터-흐름-개념-소개-introduction-to-dataflow-concepts">1. 데이터 흐름 개념 소개 (Introduction to Dataflow Concepts)</h3>
+<ul>
+<li><strong>데이터 흐름 프로그래밍(Dataflow programming)</strong> 은 데이터의 흐름이 연산 실행을 결정하고, 계산이 데이터 가용성에 의해 주도되는 패러다임입니다.</li>
+<li>F#은 불변성과 함수형 프로그래밍 원칙에 대한 강력한 지원을 활용하여 복잡한 데이터 처리 작업을 효율적으로 처리하는 데 이 방식을 활용합니다.</li>
+<li>데이터 흐름 프로그래밍의 핵심 아이디어는 계산을 <strong>데이터 처리 노드(nodes)의 네트워크</strong>로 모델링하는 것입니다. 각 노드는 특정 연산을 수행하고 결과를 후속 노드로 전달합니다.</li>
+<li>이 모델은 <strong>데이터 스트림(streams of data)</strong> 및 <strong>병렬 처리(parallel processing)</strong> 와 관련된 시나리오에 자연스럽게 적합하며, 데이터를 명확하고 직관적인 방식으로 관리하고 변환하는 방법을 제공합니다.</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode fsharp code-with-copy"><code class="sourceCode fsharp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 데이터 흐름 모델 (The Dataflow Model)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 노드 (Nodes): 계산 또는 처리 단계를 나타냅니다. 각 노드는 입력 데이터를 받아 처리하고 출력 데이터를 생성합니다.</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 에지 (Edges): 노드 간의 데이터 흐름을 나타냅니다. 데이터가 이동하는 채널이며 일반적으로 단방향입니다.</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 데이터 스트림 (Data Streams): 네트워크를 통해 이동하는 연속적인 데이터 흐름으로, 실시간 처리 및 응답성을 허용합니다.</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>//<span class="co"> F#의 비동기 워크플로 (Asynchronous Workflows)</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ot">open</span> System</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ot">open</span> System<span class="kw">.</span>Net<span class="kw">.</span>Http</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> fetchDataAsync <span class="op">(</span>url: <span class="dt">string</span><span class="op">)</span> : Async&lt;<span class="dt">string</span>&gt; =</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    async <span class="op">{</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        <span class="kw">use</span> client = <span class="kw">new</span> HttpClient<span class="op">()</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span>! response = client.GetStringAsync<span class="op">(</span>url<span class="op">)</span> |&gt; Async<span class="kw">.</span>AwaitTask</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> response</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> processDataAsync <span class="op">(</span>data: <span class="dt">string</span><span class="op">)</span> : Async&lt;<span class="dt">int</span>&gt; =</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    async <span class="op">{</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        //<span class="co"> 데이터 처리 시뮬레이션</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        <span class="kw">do</span>! Async<span class="kw">.</span>Sleep<span class="op">(</span><span class="dv">500</span><span class="op">)</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> data.Length</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> url = <span class="st">"http://example.com"</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> pipelineAsync =</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    async <span class="op">{</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span>! data = fetchDataAsync url</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span>! result = processDataAsync data</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>        printfn <span class="st">"Processed data length: %d"</span> result</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>Async<span class="kw">.</span>RunSynchronously pipelineAsync</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 메시지 처리를 위한 에이전트 사용 (Using Agents for Asynchronous Message Processing)</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> Message =</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    | ProcessData <span class="kw">of</span> <span class="dt">string</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    | Shutdown</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> dataProcessorAgent =</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    MailboxProcessor&lt;Message&gt;.Start<span class="op">(</span><span class="kw">fun</span> inbox -&gt;</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> <span class="kw">rec</span> loop <span class="op">()</span> =</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>            async <span class="op">{</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>                <span class="kw">let</span>! message = inbox.Receive<span class="op">()</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>                <span class="kw">match</span> message <span class="kw">with</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>                | ProcessData data -&gt;</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>                    printfn <span class="st">"Processing data: %s"</span> data</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>                    //<span class="co"> 데이터 처리 시뮬레이션</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">do</span>! Async<span class="kw">.</span>Sleep<span class="op">(</span><span class="dv">500</span><span class="op">)</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">return</span>! loop <span class="op">()</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>                | Shutdown -&gt;</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>                    printfn <span class="st">"Shutting down"</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>                //<span class="co"> 필요한 정리 작업 수행</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>        loop <span class="op">()</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>    <span class="op">)</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 에이전트에 메시지 보내기</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>dataProcessorAgent.Post<span class="op">(</span>ProcessData <span class="st">"Sample data"</span><span class="op">)</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>dataProcessorAgent.Post<span class="op">(</span>Shutdown<span class="op">)</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 결과 출력 (예시)</span></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>//<span class="co"> Processed data length: 44 (실제 길이는 example.com 콘텐츠에 따라 다를 수 있음)</span></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>//<span class="co"> Processing data: Sample data</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>//<span class="co"> Shutting down</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="데이터-파이프라인-및-에이전트-구현-implementing-data-pipelines-and-agents" class="level3">
+<h3 class="anchored" data-anchor-id="데이터-파이프라인-및-에이전트-구현-implementing-data-pipelines-and-agents">2. 데이터 파이프라인 및 에이전트 구현 (Implementing Data Pipelines and Agents)</h3>
+<ul>
+<li>F#에서 <strong>데이터 파이프라인(data pipelines)</strong> 은 각 단계가 데이터에 대한 특정 변환 또는 계산을 수행하는 처리 단계들을 연결하여 구성됩니다.</li>
+<li>이 접근 방식은 모듈식 및 구성 가능한 설계를 허용하며, 여기서 파이프라인의 각 단계는 더 큰 시스템에 통합되기 전에 독립적으로 개발 및 테스트될 수 있습니다.</li>
+<li>F#은 <strong>에이전트(agents)</strong> 를 사용하여 데이터 처리 시스템을 구축하는 것을 지원합니다. 에이전트는 메시지 전달을 통해 통신하는 경량 동시 엔터티입니다.</li>
+<li>에이전트는 함수형 프로그래밍 패러다임과 잘 어울리는 방식으로 상태를 관리하고 작업을 조정하는 데 유용하며, 효율적이고 확장 가능한 데이터 처리를 가능하게 합니다.</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode fsharp code-with-copy"><code class="sourceCode fsharp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 비동기 워크플로를 사용한 데이터 파이프라인 구축 (Building Data Pipelines with Asynchronous Workflows)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 1단계: 비동기적으로 데이터 가져오기</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> fetchNumbersAsync <span class="op">()</span> : Async&lt;<span class="dt">int</span> list&gt; =</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    async <span class="op">{</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        //<span class="co"> 데이터 검색 시뮬레이션</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="kw">do</span>! Async<span class="kw">.</span>Sleep<span class="op">(</span><span class="dv">500</span><span class="op">)</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> <span class="op">[</span><span class="dv">1</span>; <span class="dv">2</span>; <span class="dv">3</span>; <span class="dv">4</span>; <span class="dv">5</span><span class="op">]</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 2단계: 데이터 변환 (예: 각 숫자를 제곱)</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> transformNumbersAsync <span class="op">(</span>numbers: <span class="dt">int</span> list<span class="op">)</span> : Async&lt;<span class="dt">int</span> list&gt; =</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    async <span class="op">{</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> squaredNumbers = List<span class="kw">.</span>map <span class="op">(</span><span class="kw">fun</span> x -&gt; x * x<span class="op">)</span> numbers</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> squaredNumbers</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 3단계: 데이터 집계 (예: 합계 계산)</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> aggregateNumbersAsync <span class="op">(</span>numbers: <span class="dt">int</span> list<span class="op">)</span> : Async&lt;<span class="dt">int</span>&gt; =</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    async <span class="op">{</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> sum = List<span class="kw">.</span>sum numbers</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> sum</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 모든 단계를 결합하는 파이프라인</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> pipelineAsync =</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    async <span class="op">{</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span>! numbers = fetchNumbersAsync <span class="op">()</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span>! transformedNumbers = transformNumbersAsync numbers</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span>! result = aggregateNumbersAsync transformedNumbers</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>        printfn <span class="st">"Final result: %d"</span> result</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 파이프라인 실행</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>Async<span class="kw">.</span>RunSynchronously pipelineAsync</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 비동기 메시지 처리를 위한 에이전트 구현 (Implementing Agents for Asynchronous Message Processing)</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> Message =</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    | ProcessData <span class="kw">of</span> <span class="dt">string</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    | ReportStatus <span class="kw">of</span> AsyncReplyChannel&lt;<span class="dt">string</span>&gt;</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    | Shutdown</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> dataProcessingAgent =</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>    MailboxProcessor&lt;Message&gt;.Start<span class="op">(</span><span class="kw">fun</span> inbox -&gt;</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> <span class="kw">rec</span> loop <span class="op">()</span> =</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>            async <span class="op">{</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>                <span class="kw">let</span>! message = inbox.Receive<span class="op">()</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>                <span class="kw">match</span> message <span class="kw">with</span></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>                | ProcessData data -&gt;</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>                    printfn <span class="st">"Processing data: %s"</span> data</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>                    //<span class="co"> 데이터 처리 시뮬레이션</span></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">do</span>! Async<span class="kw">.</span>Sleep<span class="op">(</span><span class="dv">500</span><span class="op">)</span></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">return</span>! loop <span class="op">()</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>                | ReportStatus replyChannel -&gt;</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>                    replyChannel.Reply<span class="op">(</span><span class="st">"Agent is running"</span><span class="op">)</span></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">return</span>! loop <span class="op">()</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>                | Shutdown -&gt;</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>                    printfn <span class="st">"Shutting down"</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>                //<span class="co"> 필요한 정리 작업 수행</span></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>        loop <span class="op">()</span></span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>    <span class="op">)</span></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 에이전트에 메시지 보내기</span></span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>dataProcessingAgent.Post<span class="op">(</span>ProcessData <span class="st">"Sample data"</span><span class="op">)</span></span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 에이전트에서 상태 요청</span></span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> statusReply =</span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>    dataProcessingAgent.PostAndReply<span class="op">(</span><span class="kw">fun</span> replyChannel -&gt; ReportStatus<span class="op">(</span>replyChannel<span class="op">))</span></span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>printfn <span class="st">"Agent status: %s"</span> statusReply</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 에이전트 종료</span></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>dataProcessingAgent.Post<span class="op">(</span>Shutdown<span class="op">)</span></span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 파이프라인과 에이전트를 결합하여 복잡한 데이터 흐름 처리 (Combining Pipelines and Agents for Complex Dataflows)</span></span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 데이터 파이프라인을 관리하는 에이전트 정의</span></span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> pipelineAgent =</span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>    MailboxProcessor&lt;Async&lt;<span class="dt">unit</span>&gt;&gt;.Start<span class="op">(</span><span class="kw">fun</span> inbox -&gt;</span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> <span class="kw">rec</span> loop <span class="op">()</span> =</span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>            async <span class="op">{</span></span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>                <span class="kw">let</span>! pipelineAsync = inbox.Receive<span class="op">()</span></span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>                <span class="kw">do</span>! pipelineAsync</span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>                <span class="kw">return</span>! loop <span class="op">()</span></span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>        loop <span class="op">()</span></span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>    <span class="op">)</span></span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 데이터 처리 파이프라인 정의</span></span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> dataProcessingPipeline =</span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>    async <span class="op">{</span></span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span>! numbers = fetchNumbersAsync <span class="op">()</span></span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span>! transformedNumbers = transformNumbersAsync numbers</span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span>! result = aggregateNumbersAsync transformedNumbers</span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>        printfn <span class="st">"Pipeline result: %d"</span> result</span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 에이전트를 사용하여 파이프라인 시작</span></span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>pipelineAgent.Post<span class="op">(</span>dataProcessingPipeline<span class="op">)</span></span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 결과 출력 (예시)</span></span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a>//<span class="co"> Final result: 55</span></span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>//<span class="co"> Processing data: Sample data</span></span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>//<span class="co"> Agent status: Agent is running</span></span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>//<span class="co"> Shutting down</span></span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a>//<span class="co"> Pipeline result: 55</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="병렬-및-비동기-데이터-처리-처리-handling-parallel-and-asynchronous-data-processing" class="level3">
+<h3 class="anchored" data-anchor-id="병렬-및-비동기-데이터-처리-처리-handling-parallel-and-asynchronous-data-processing">3. 병렬 및 비동기 데이터 처리 처리 (Handling Parallel and Asynchronous Data Processing)</h3>
+<ul>
+<li>F#의 데이터 흐름 프로그래밍은 불변성과 함수형 프로그래밍 모델을 강조하기 때문에 병렬 및 비동기 처리에 적합합니다.</li>
+<li>데이터 처리 작업을 개별 단계로 세분화함으로써, 여러 프로세서 또는 코어를 효과적으로 활용하여 서로 다른 단계를 동시에 실행할 수 있습니다.</li>
+<li>비동기 데이터 처리는 응용 프로그램의 응답성과 성능을 향상시키는 비차단 연산을 허용합니다.</li>
+<li>F#의 <code>async</code> 워크플로 및 병렬 처리 라이브러리를 통해 개발자는 성능 저하 없이 대량의 데이터를 처리하고 복잡한 계산을 수행하는 시스템을 설계할 수 있습니다.</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode fsharp code-with-copy"><code class="sourceCode fsharp"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>//<span class="co"> F#을 사용한 병렬 데이터 처리 (Parallel Data Processing with F#)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ot">open</span> System</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ot">open</span> System<span class="kw">.</span>Threading<span class="kw">.</span>Tasks</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> computeFactorial <span class="op">(</span>n: <span class="dt">int</span><span class="op">)</span> : <span class="dt">int</span> =</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="kw">rec</span> factorial x acc =</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">if</span> x &lt;= <span class="dv">1</span> <span class="kw">then</span> acc</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="kw">else</span> factorial <span class="op">(</span>x - <span class="dv">1</span><span class="op">)</span> <span class="op">(</span>x * acc<span class="op">)</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    factorial n <span class="dv">1</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> numbers = <span class="op">[</span><span class="dv">1</span>; <span class="dv">2</span>; <span class="dv">3</span>; <span class="dv">4</span>; <span class="dv">5</span><span class="op">]</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>Parallel<span class="kw">.</span>ForEach<span class="op">(</span>numbers, <span class="kw">fun</span> number -&gt;</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> result = computeFactorial number</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    printfn <span class="st">"Factorial of %d is %d"</span> number result</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="op">)</span> |&gt; ignore</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>//<span class="co"> Async.Parallel을 사용한 병렬 처리 (Parallel Processing with Async.Parallel)</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="ot">open</span> System</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="ot">open</span> System<span class="kw">.</span>Net<span class="kw">.</span>Http</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> fetchDataAsync <span class="op">(</span>url: <span class="dt">string</span><span class="op">)</span> : Async&lt;<span class="dt">string</span>&gt; =</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    async <span class="op">{</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>        <span class="kw">use</span> client = <span class="kw">new</span> HttpClient<span class="op">()</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span>! response = client.GetStringAsync<span class="op">(</span>url<span class="op">)</span> |&gt; Async<span class="kw">.</span>AwaitTask</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> response</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> urls = <span class="op">[</span><span class="st">"http://example.com"</span>; <span class="st">"http://example.org"</span>; <span class="st">"http://example.net"</span><span class="op">]</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> fetchAllDataAsync <span class="op">()</span> : Async&lt;<span class="dt">string</span> list&gt; =</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    async <span class="op">{</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span>! results = urls |&gt; List<span class="kw">.</span>map fetchDataAsync |&gt; Async<span class="kw">.</span>Parallel</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> results |&gt; Array<span class="kw">.</span>toList</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> results = Async<span class="kw">.</span>RunSynchronously <span class="op">(</span>fetchAllDataAsync <span class="op">())</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>results |&gt; List<span class="kw">.</span>iter <span class="op">(</span>printfn <span class="st">"%s"</span><span class="op">)</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>//<span class="co"> F#을 사용한 비동기 데이터 처리 (Asynchronous Data Processing with F#)</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> processDataAsync <span class="op">(</span>data: <span class="dt">string</span><span class="op">)</span> : Async&lt;<span class="dt">string</span>&gt; =</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>    async <span class="op">{</span></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>        //<span class="co"> 데이터 처리 시뮬레이션</span></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>        <span class="kw">do</span>! Async<span class="kw">.</span>Sleep<span class="op">(</span><span class="dv">1000</span><span class="op">)</span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> sprintf <span class="st">"Processed: %s"</span> data</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> runProcessingAsync <span class="op">()</span> : Async&lt;<span class="dt">unit</span>&gt; =</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>    async <span class="op">{</span></span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span>! results =</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>            <span class="op">[</span> <span class="st">"data1"</span>; <span class="st">"data2"</span>; <span class="st">"data3"</span> <span class="op">]</span></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>            |&gt; List<span class="kw">.</span>map processDataAsync</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>            |&gt; Async<span class="kw">.</span>Parallel</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>        results |&gt; Array<span class="kw">.</span>iter <span class="op">(</span>printfn <span class="st">"%s"</span><span class="op">)</span></span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>Async<span class="kw">.</span>RunSynchronously <span class="op">(</span>runProcessingAsync <span class="op">())</span></span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 비동기 및 병렬 처리 결합 (Combining Asynchronous and Parallel Processing)</span></span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> processItemAsync <span class="op">(</span>item: <span class="dt">int</span><span class="op">)</span> : Async&lt;<span class="dt">int</span>&gt; =</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>    async <span class="op">{</span></span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>        //<span class="co"> 시간 소모적인 작업 시뮬레이션</span></span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>        <span class="kw">do</span>! Async<span class="kw">.</span>Sleep<span class="op">(</span><span class="dv">500</span><span class="op">)</span></span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> item * item</span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> parallelProcessingAsync <span class="op">(</span>items: <span class="dt">int</span> list<span class="op">)</span> : Async&lt;<span class="dt">int</span> list&gt; =</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>    async <span class="op">{</span></span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span>! results =</span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>            items</span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>            |&gt; List<span class="kw">.</span>map processItemAsync</span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>            |&gt; Async<span class="kw">.</span>Parallel</span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> results |&gt; Array<span class="kw">.</span>toList</span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> items = <span class="op">[</span><span class="dv">1</span>; <span class="dv">2</span>; <span class="dv">3</span>; <span class="dv">4</span>; <span class="dv">5</span><span class="op">]</span></span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> processedResults = Async<span class="kw">.</span>RunSynchronously <span class="op">(</span>parallelProcessingAsync items<span class="op">)</span></span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>printfn <span class="st">"Processed results: %A"</span> processedResults</span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 비동기 및 병렬 처리의 오류 처리 (Error Handling in Asynchronous and Parallel Processing)</span></span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 비동기 워크플로의 오류 처리 (Error Handling in Asynchronous Workflows)</span></span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> fetchDataWithErrorHandling <span class="op">(</span>url: <span class="dt">string</span><span class="op">)</span> : Async&lt;<span class="dt">string</span>&gt; =</span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>    async <span class="op">{</span></span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>        <span class="kw">try</span></span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>            <span class="kw">use</span> client = <span class="kw">new</span> HttpClient<span class="op">()</span></span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>            <span class="kw">let</span>! response = client.GetStringAsync<span class="op">(</span>url<span class="op">)</span> |&gt; Async<span class="kw">.</span>AwaitTask</span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>            <span class="kw">return</span> response</span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>        <span class="kw">with</span></span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a>        | ex -&gt; <span class="kw">return</span> sprintf <span class="st">"Error fetching data: %s"</span> ex.Message</span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 병렬 처리의 오류 처리 (Error Handling in Parallel Processing)</span></span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> safeProcessItem <span class="op">(</span>item: <span class="dt">int</span><span class="op">)</span> : Async&lt;Result&lt;<span class="dt">int</span>, <span class="dt">string</span>&gt;&gt; =</span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>    async <span class="op">{</span></span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>        <span class="kw">try</span></span>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a>            <span class="kw">do</span>! Async<span class="kw">.</span>Sleep<span class="op">(</span><span class="dv">500</span><span class="op">)</span></span>
+<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>            <span class="kw">return</span> Ok <span class="op">(</span>item * item<span class="op">)</span></span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a>        <span class="kw">with</span> ex -&gt;</span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a>            <span class="kw">return</span> Error <span class="op">(</span>sprintf <span class="st">"Processing failed: %s"</span> ex.Message<span class="op">)</span></span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> processItemsAsync <span class="op">(</span>items: <span class="dt">int</span> list<span class="op">)</span> : Async&lt;Result&lt;<span class="dt">int</span>, <span class="dt">string</span>&gt; list&gt; =</span>
+<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>    async <span class="op">{</span></span>
+<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span>! results =</span>
+<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a>            items</span>
+<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a>            |&gt; List<span class="kw">.</span>map safeProcessItem</span>
+<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>            |&gt; Async<span class="kw">.</span>Parallel</span>
+<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> results |&gt; Array<span class="kw">.</span>toList</span>
+<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> results = Async<span class="kw">.</span>RunSynchronously <span class="op">(</span>processItemsAsync items<span class="op">)</span></span>
+<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>results |&gt; List<span class="kw">.</span>iter <span class="op">(</span><span class="kw">function</span></span>
+<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a>    | Ok value -&gt; printfn <span class="st">"Processed value: %d"</span> value</span>
+<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a>    | Error msg -&gt; printfn <span class="st">"Error: %s"</span> msg</span>
+<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span>
+<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 결과 출력 (예시)</span></span>
+<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a>//<span class="co"> (실제 출력은 실행 환경 및 URL에 따라 달라질 수 있습니다.)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="f-데이터-흐름-애플리케이션-사례-연구-case-studies-of-dataflow-applications-in-f" class="level3">
+<h3 class="anchored" data-anchor-id="f-데이터-흐름-애플리케이션-사례-연구-case-studies-of-dataflow-applications-in-f">4. F# 데이터 흐름 애플리케이션 사례 연구 (Case Studies of Dataflow Applications in F#)</h3>
+<ul>
+<li>F#의 데이터 흐름 프로그래밍은 <strong>실시간 데이터 처리, 웹 스크래핑 및 데이터 집계, 이벤트 기반 데이터 처리, 배치 데이터 처리</strong>와 같은 다양한 실제 시나리오에 적용됩니다.</li>
+<li>사례 연구를 통해 F#의 데이터 흐름 프로그래밍 기능이 복잡한 데이터 처리 작업을 어떻게 효율적으로 처리하고, 실시간 통찰력을 제공하고, 대규모 데이터 처리를 쉽게 처리할 수 있는지 보여줍니다.</li>
+<li>이러한 사례 연구는 F#의 데이터 흐름 프로그래밍 기능을 활용하여 견고하고 효율적인 시스템을 구축하는 방법을 보여줍니다.</li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode fsharp code-with-copy"><code class="sourceCode fsharp"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 실시간 금융 데이터 처리 (Real-Time Financial Data Processing)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 시뮬레이션된 데이터 가져오기</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> fetchStockPricesAsync <span class="op">(</span>symbol: <span class="dt">string</span><span class="op">)</span> : Async&lt;<span class="dt">decimal</span> list&gt; =</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    async <span class="op">{</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        //<span class="co"> 네트워크 지연 시뮬레이션</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        <span class="kw">do</span>! Async<span class="kw">.</span>Sleep<span class="op">(</span><span class="dv">1000</span><span class="op">)</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> <span class="op">[</span><span class="dv">100</span>m; <span class="dv">101</span>m; <span class="dv">102</span>m; <span class="dv">103</span>m; <span class="dv">104</span>m<span class="op">]</span> //<span class="co"> 예제 가격</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 이동 평균 계산</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> calculateMovingAverage <span class="op">(</span>prices: <span class="dt">decimal</span> list<span class="op">)</span> <span class="op">(</span>period: <span class="dt">int</span><span class="op">)</span> : <span class="dt">decimal</span> list =</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="kw">rec</span> movingAverage acc prices =</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        <span class="kw">match</span> prices <span class="kw">with</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        | <span class="op">[]</span> -&gt; List<span class="kw">.</span>rev acc</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        | _ <span class="kw">when</span> List<span class="kw">.</span>length prices &lt; period -&gt; List<span class="kw">.</span>rev acc</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        | _ -&gt;</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>            <span class="kw">let</span> window = prices |&gt; List<span class="kw">.</span>take period</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>            <span class="kw">let</span> avg = <span class="op">(</span>List<span class="kw">.</span>sum window<span class="op">)</span> / <span class="op">(</span><span class="dt">decimal</span> period<span class="op">)</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>            movingAverage <span class="op">(</span>avg :: acc<span class="op">)</span> <span class="op">(</span>List<span class="kw">.</span>tail prices<span class="op">)</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    movingAverage <span class="op">[]</span> prices</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 데이터 처리 파이프라인</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> stockAnalysisPipelineAsync <span class="op">(</span>symbol: <span class="dt">string</span><span class="op">)</span> <span class="op">(</span>period: <span class="dt">int</span><span class="op">)</span> : Async&lt;<span class="dt">unit</span>&gt; =</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    async <span class="op">{</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span>! prices = fetchStockPricesAsync symbol</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> movingAverages = calculateMovingAverage prices period</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>        printfn <span class="st">"Moving averages for %s: %A"</span> symbol movingAverages</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 파이프라인 실행</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>Async<span class="kw">.</span>RunSynchronously <span class="op">(</span>stockAnalysisPipelineAsync <span class="st">"AAPL"</span> <span class="dv">3</span><span class="op">)</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 웹 스크래핑 및 데이터 집계 (Web Scraping and Data Aggregation)</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="ot">open</span> System</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="ot">open</span> System<span class="kw">.</span>Net<span class="kw">.</span>Http</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="ot">open</span> FSharp<span class="kw">.</span>Data</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 웹 페이지에서 제품 가격 가져오기 (가상의 웹 페이지 구조를 사용)</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> ProductPage = HtmlProvider&lt;<span class="st">"""</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="st">&lt;html&gt;</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="st">  &lt;body&gt;</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="st">    &lt;div class="</span>price<span class="st">"&gt;$100.00&lt;/div&gt;</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="st">  &lt;/body&gt;</span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="st">&lt;/html&gt;</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>&gt;</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>//<span class="co"> HTML 문자열에서 가격 추출</span></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> extractPrice <span class="op">(</span>html: <span class="dt">string</span><span class="op">)</span> : <span class="dt">decimal</span> =</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> doc = ProductPage<span class="kw">.</span>Parse<span class="op">(</span>html<span class="op">)</span></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> priceString = doc.CssSelect<span class="op">(</span><span class="st">".price"</span><span class="op">)</span>.Head<span class="op">()</span>.InnerText<span class="op">()</span>.Trim<span class="op">(</span><span class="ch">'$'</span><span class="op">)</span></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>    Decimal<span class="kw">.</span>Parse<span class="op">(</span>priceString<span class="op">)</span></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>//<span class="co"> Fetch product price from a single page</span></span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> fetchProductPriceAsync <span class="op">(</span>url: <span class="dt">string</span><span class="op">)</span> : Async&lt;<span class="dt">decimal</span>&gt; =</span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>    async <span class="op">{</span></span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>        <span class="kw">use</span> client = <span class="kw">new</span> HttpClient<span class="op">()</span></span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span>! html = client.GetStringAsync<span class="op">(</span>url<span class="op">)</span> |&gt; Async<span class="kw">.</span>AwaitTask</span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> extractPrice html</span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>//<span class="co"> Scrape prices from multiple pages</span></span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> scrapePricesAsync <span class="op">(</span>urls: <span class="dt">string</span> list<span class="op">)</span> : Async&lt;<span class="dt">decimal</span> list&gt; =</span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>    async <span class="op">{</span></span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span>! prices = urls |&gt; List<span class="kw">.</span>map fetchProductPriceAsync |&gt; Async<span class="kw">.</span>Parallel</span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> prices |&gt; Array<span class="kw">.</span>toList</span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>//<span class="co"> Example usage</span></span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> productUrls = <span class="op">[</span><span class="st">"http://example.com/product1"</span>; <span class="st">"http://example.com/product2"</span><span class="op">]</span></span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> prices = Async<span class="kw">.</span>RunSynchronously <span class="op">(</span>scrapePricesAsync productUrls<span class="op">)</span></span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>printfn <span class="st">"Scraped prices: %A"</span> prices</span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 이벤트 기반 데이터 처리 (Event-Driven Data Processing)</span></span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a><span class="ot">open</span> System</span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a><span class="ot">open</span> System<span class="kw">.</span>Reactive<span class="kw">.</span>Linq</span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a><span class="ot">open</span> System<span class="kw">.</span>Reactive<span class="kw">.</span>Subjects</span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 센서 데이터 스트림 시뮬레이션</span></span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> sensorDataStream = <span class="kw">new</span> Subject&lt;<span class="dt">int</span>&gt;<span class="op">()</span></span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 처리 함수</span></span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> processSensorData <span class="op">(</span>data: <span class="dt">int</span><span class="op">)</span> =</span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a>    printfn <span class="st">"Received sensor data: %d"</span> data</span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> data &gt; <span class="dv">50</span> <span class="kw">then</span></span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a>        printfn <span class="st">"Alert: High value detected!"</span></span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 센서 데이터 스트림 구독</span></span>
+<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> subscription =</span>
+<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a>    sensorDataStream</span>
+<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a>    |&gt; Observable<span class="kw">.</span>subscribe processSensorData</span>
+<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 데이터 보내기 시뮬레이션</span></span>
+<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a><span class="op">[</span><span class="dv">1</span>; <span class="dv">20</span>; <span class="dv">30</span>; <span class="dv">55</span>; <span class="dv">60</span><span class="op">]</span> |&gt; List<span class="kw">.</span>iter <span class="op">(</span><span class="kw">fun</span> value -&gt; sensorDataStream.OnNext<span class="op">(</span>value<span class="op">))</span></span>
+<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 완료되면 구독을 폐기합니다.</span></span>
+<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a>subscription.Dispose<span class="op">()</span></span>
+<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 일괄 데이터 처리</span></span>
+<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a>//<span class="co"> 로그 파일 분석</span></span>
+<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a><span class="ot">open</span> System</span>
+<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a><span class="ot">open</span> System<span class="kw">.</span>IO</span>
+<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> parseLogEntries <span class="op">(</span>filePath: <span class="dt">string</span><span class="op">)</span> : <span class="dt">string</span> list =</span>
+<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a>  File<span class="kw">.</span>ReadLines<span class="op">(</span>filePath<span class="op">)</span> </span>
+<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a>    |&gt; Seq<span class="kw">.</span>toList</span>
+<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a>//<span class="co"> Process log entries to count occurrences of a specific event</span></span>
+<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> countEventOccurrences <span class="op">(</span>entries: <span class="dt">string</span> list<span class="op">)</span> <span class="op">(</span>eventKeyword: <span class="dt">string</span><span class="op">)</span> : <span class="dt">int</span> =</span>
+<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a>  entries </span>
+<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a>    |&gt; List<span class="kw">.</span>filter <span class="op">(</span><span class="kw">fun</span> entry -&gt; entry.Contains<span class="op">(</span>eventKeyword<span class="op">))</span> </span>
+<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a>    |&gt; List<span class="kw">.</span>length</span>
+<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a>//<span class="co"> Batch processing function</span></span>
+<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> processLogsBatch <span class="op">(</span>filePaths: <span class="dt">string</span> list<span class="op">)</span> <span class="op">(</span>eventKeyword: <span class="dt">string</span><span class="op">)</span> : <span class="dt">int</span> =</span>
+<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a>  filePaths</span>
+<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a>    |&gt; List<span class="kw">.</span>map parseLogEntries</span>
+<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a>    |&gt; List<span class="kw">.</span>map <span class="op">(</span>countEventOccurrences eventKeyword<span class="op">)</span></span>
+<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a>    |&gt; List<span class="kw">.</span>sum</span>
+<span id="cb4-120"><a href="#cb4-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a>//<span class="co"> Example usage</span></span>
+<span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> logFiles = <span class="op">[</span><span class="st">"log1.txt"</span>; <span class="st">"log2.txt"</span>; <span class="st">"log3.txt"</span><span class="op">]</span></span>
+<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> eventCount = processLogsBatch logFiles <span class="st">"ERROR"</span></span>
+<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a>printfn <span class="st">"Total errors: %d"</span> eventCount</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../notes/fsharp_11.html" class="pagination-link" aria-label="함수형 프로그래밍">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">함수형 프로그래밍</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../notes/fsharp_13.html" class="pagination-link" aria-label="비동기 프로그래밍">
+        <span class="nav-page-text">비동기 프로그래밍</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

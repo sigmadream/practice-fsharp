@@ -1,0 +1,295 @@
+---
+title: 컬렉션 및 데이터 구조
+subtitle: Collections and Data Structures
+description: |
+ F#의 컬렉션은 불변성을 기본으로 하며, 리스트, 배열, 시퀀스를 통해 다양한 데이터 구조를 제공한다. 리스트는 불변성이 강조된 기본 구조이며, 배열은 고정 크기의 가변 컬렉션, 시퀀스는 지연 평가를 활용한 무한 데이터 처리를 지원한다. 또한, 집합과 맵을 활용하여 고유한 데이터 저장과 키-값 매핑을 효율적으로 수행할 수 있으며, `map`, `filter`, `fold`와 같은 함수형 연산을 통해 선언적이고 간결한 데이터 처리가 가능하다.
+categories:
+  - Collections
+  - Data Structures
+execute:
+  eval: false
+---
+
+### 1. 리스트, 배열, 시퀀스 작업 (Working with Lists, Arrays, and Sequences)
+
+* **리스트(Lists)**: F#의 기본 불변 데이터 구조로, 데이터가 자주 변경되지 않는 시나리오에 적합합니다. 함수형 프로그래밍 기술을 통해 요소를 추가, 제거 및 변환하는 작업을 지원합니다.
+* **배열(Arrays)**: 고정 크기의 가변 컬렉션입니다. 요소에 대한 효율적인 임의 접근을 허용하므로 데이터 크기가 알려져 있고 자주 변경되지 않는 시나리오에 적합합니다.
+* **시퀀스(Sequences)**: 지연 평가(lazy evaluation)되는 불변 컬렉션으로, 잠재적으로 무한한 데이터를 나타낼 수 있습니다. 필요할 때 요소가 생성되므로 과도한 메모리 소비 없이 대규모 또는 무한 데이터 집합을 효율적으로 처리할 수 있습니다.
+
+```fsharp
+// 리스트 (Lists)
+let numbers = [1; 2; 3; 4; 5]
+
+// 리스트 요소 접근 (Accessing Elements)
+let head, tail =
+    match numbers with
+    | head :: tail -> head, tail
+    | [] -> failwith "Empty list"
+
+// 리스트 변환 (List Transformation)
+let squaredNumbers = List.map (fun x -> x * x) numbers // [1; 4; 9; 16; 25]
+
+// 리스트 필터링 (Filtering Lists)
+let evenNumbers = List.filter (fun x -> x % 2 = 0) numbers // [2; 4]
+
+// 리스트 축소 (Folding Lists)
+let sum = List.fold (fun acc x -> acc + x) 0 numbers // 15
+
+// 배열 (Arrays)
+let numbersArray = [| 1; 2; 3; 4; 5 |]
+
+// 배열 요소 접근 (Accessing Elements)
+let firstElement = numbersArray.[0]
+
+// 배열 변환 (Array Transformation)
+let squaredArray = Array.map (fun x -> x * x) numbersArray // [| 1; 4; 9; 16; 25 |]
+
+// 배열 필터링 (Array Filtering)
+let evenArray = Array.filter (fun x -> x % 2 = 0) numbersArray // [| 2; 4 |]
+
+// 배열 축소 (Array Folding)
+let sumArray = Array.fold (fun acc x -> acc + x) 0 numbersArray // 15
+
+// 시퀀스 (Sequences)
+let sequence = seq { 1..5 }
+
+// 시퀀스 변환 (Transforming Sequences)
+let squaredSequence = Seq.map (fun x -> x * x) sequence // seq [1; 4; 9; 16; 25]
+
+// 시퀀스 필터링 (Filtering Sequences)
+let evenSequence = Seq.filter (fun x -> x % 2 = 0) sequence // seq [2; 4]
+
+// 시퀀스 축소 (Folding Sequences)
+let sumSequence = Seq.fold (fun acc x -> acc + x) 0 sequence // 15
+
+// 결과 출력
+printfn "head = %d" head
+printfn "tail = %A" tail
+printfn "squaredNumbers = %A" squaredNumbers
+printfn "evenNumbers = %A" evenNumbers
+printfn "sum = %d" sum
+printfn "firstElement = %d" firstElement
+printfn "squaredArray = %A" squaredArray
+printfn "evenArray = %A" evenArray
+printfn "sumArray = %d" sumArray
+printfn "squaredSequence = %A" squaredSequence
+printfn "evenSequence = %A" evenSequence
+printfn "sumSequence = %d" sumSequence
+```
+
+### 2. 불변 컬렉션 및 데이터 변환 (Immutable Collections and Data Transformations)
+
+* **불변성(Immutability)** 은 F# 프로그래밍의 핵심 원칙이며, 많은 컬렉션이 불변 연산을 지원합니다.
+* 불변 컬렉션은 원래 데이터를 변경하지 않고 수정할 경우 새 컬렉션을 생성합니다.
+* 이러한 접근 방식은 부작용과 동시성 문제를 제거하여 더 안전하고 예측 가능한 코드를 만듭니다.
+* F#은 리스트와 배열 외에도 **집합(sets)** 및 **맵(maps)** 을 포함한 다양한 불변 컬렉션을 제공합니다.
+* **집합(Sets)** 은 고유한 요소의 컬렉션을 나타내고, **맵(maps)** (또는 **사전(dictionaries)**)은 키-값 쌍을 저장합니다.
+
+```fsharp
+// 리스트 (Lists)
+let list1 = [1; 2; 3]
+let list2 = [4; 5; 6]
+let combinedList = List.append list1 list2 // [1; 2; 3; 4; 5; 6]
+
+// 집합 (Sets)
+let set1 = Set.ofList [1; 2; 3]
+let set2 = Set.ofList [3; 4; 5]
+let unionSet = Set.union set1 set2 // set [1; 2; 3; 4; 5]
+
+// 맵 (Maps)
+let map1 = Map.ofList [(1, "one"); (2, "two")]
+let map2 = Map.add 3 "three" map1 // map [(1, "one"); (2, "two"); (3, "three")]
+
+// 데이터 변환 (Data Transformations) - 리스트
+let numbers = [1; 2; 3; 4; 5]
+let squaredNumbers = List.map (fun x -> x * x) numbers // [1; 4; 9; 16; 25]
+let evenNumbers = List.filter (fun x -> x % 2 = 0) numbers // [2; 4]
+
+// 데이터 변환 (Data Transformations) - 집합
+let set = Set.ofList [1; 2; 3; 4; 5]
+let squaredSet = Set.map (fun x -> x * x) set // set [1; 4; 9; 16; 25]
+
+// 데이터 변환 (Data Transformations) - 맵
+let map = Map.ofList [(1, "one"); (2, "two")]
+let upperCaseMap = Map.map (fun key value -> (key, value.ToUpper())) map // map [(1, "ONE"); (2, "TWO")]
+
+// 컬렉션 및 변환 결합 (Combining Collections and Transformations)
+let numbers = [1; 2; 2; 3; 4; 4; 5]
+let uniqueNumbers = List.distinct numbers
+let numberSet = Set.ofList uniqueNumbers // set [1; 2; 3; 4; 5]
+
+// 데이터 처리 파이프라인 (Data Processing Pipeline)
+let processNumbers numbers =
+    numbers
+    |> List.filter (fun x -> x % 2 = 0)    // 짝수 필터링
+    |> List.map (fun x -> x * x)         // 제곱
+    |> Set.ofList                       // 고유 값을 갖도록 집합으로 변환
+
+let numbers = [1; 2; 3; 4; 5; 6]
+let resultSet = processNumbers numbers // set [4; 16; 36]
+
+// 결과 출력
+printfn "combinedList = %A" combinedList
+printfn "unionSet = %A" unionSet
+printfn "map2 = %A" map2
+printfn "squaredNumbers = %A" squaredNumbers
+printfn "evenNumbers = %A" evenNumbers
+printfn "squaredSet = %A" squaredSet
+printfn "upperCaseMap = %A" upperCaseMap
+printfn "numberSet = %A" numberSet
+printfn "resultSet = %A" resultSet
+```
+
+### 3. 집합, 맵 및 사전 사용 (Using Sets, Maps, and Dictionaries)
+
+* **집합(Sets)** 은 F#에서 멤버 자격 및 고유성이 중요한 시나리오에 적합합니다. 멤버 자격을 테스트하고 요소를 효율적으로 추가 및 제거하는 작업을 제공합니다.
+* **맵(Maps)** (또는 **사전(dictionaries)**)은 키를 값과 연결하는 데 사용되어 키를 기반으로 빠른 조회를 가능하게 합니다.
+* F# 맵은 추가, 업데이트, 키-값 쌍 제거와 같은 작업을 지원합니다.
+* F#은 `map`, `filter`, `fold`와 같은 특수 컬렉션 함수도 제공합니다.
+
+```fsharp
+// 집합 (Sets)
+let numbers = Set.ofList [1; 2; 3; 4; 5]
+let numberSet = Set.ofList numbers // set [1; 2; 3; 4; 5]
+
+// 집합 연산 (Set Operations)
+let setA = Set.ofList [1; 2; 3; 4]
+let setB = Set.ofList [3; 4; 5; 6]
+let unionSet = Set.union setA setB // set [1; 2; 3; 4; 5; 6]
+let intersectionSet = Set.intersect setA setB // set [3; 4]
+let differenceSet = Set.difference setA setB // set [1; 2]
+let symmetricDifferenceSet = Set.symmetricDifference setA setB // set [1; 2; 5; 6]
+
+// 맵 (Maps)
+let ageMap = Map.ofList [( "Alice", 30 ); ( "Bob", 25 ); ( "Carol", 35 )] // map [("Alice", 30); ("Bob", 25); ("Carol", 35)]
+
+// 맵 연산 (Map Operations)
+let updatedAgeMap = Map.add "Dave" 40 ageMap // map [("Alice", 30); ("Bob", 25); ("Carol", 35); ("Dave", 40)]
+let removedAgeMap = Map.remove "Bob" updatedAgeMap // map [("Alice", 30); ("Carol", 35); ("Dave", 40)]
+let age = Map.tryFind "Carol" updatedAgeMap // Some 35
+
+// 사전 (Dictionaries)
+open System.Collections.Generic
+let dictionary = Dictionary<string, int>()
+dictionary.Add("Alice", 30)
+dictionary.Add("Bob", 25)
+dictionary.Add("Carol", 35)
+
+// 사전 연산 (Dictionary Operations)
+dictionary.["Dave"] <- 40
+let hasAlice = dictionary.ContainsKey("Alice") // true
+let aliceAge = dictionary.["Alice"]
+dictionary.Remove("Bob")
+for kvp in dictionary do
+    printfn "%s: %d" kvp.Key kvp.Value
+
+// 집합, 맵, 사전을 사용한 데이터 변환 (Data Transformation with Sets, Maps, and Dictionaries)
+// 집합으로 필터링 및 집계
+let numbers = Set.ofList [1; 2; 3; 4; 5; 6; 7; 8; 9; 10]
+let evenNumbers = Set.filter (fun x -> x % 2 = 0) numbers // set [2; 4; 6; 8; 10]
+let sum = Set.fold ( + ) 0 evenNumbers // 30
+
+// 맵 변환
+let increasedAges = Map.map (fun key age -> age + 5) ageMap // map [("Alice", 35); ("Bob", 30); ("Carol", 40)]
+
+// 집계를 위한 사전 사용
+let salesData = Dictionary<string, int>()
+salesData.Add("ProductA", 150)
+salesData.Add("ProductB", 200)
+salesData.Add("ProductC", 100)
+let totalSales = salesData.Values |> Seq.sum // 450
+
+// 데이터 분석을 위한 컬렉션 사용 (Using Collections for Data Analysis)
+let sentences = [
+    "Functional programming in F# is powerful"
+    "F# makes data processing easy"
+    "Data processing and functional programming in F#"
+]
+let wordCounts =
+    sentences
+    |> List.collect (fun sentence -> sentence.Split(' '))
+    |> List.fold (fun acc word ->
+        Map.add word (Map.findOrDefault word acc 0 + 1) acc) Map.empty
+
+// 결과 출력
+printfn "numberSet = %A" numberSet
+printfn "unionSet = %A" unionSet
+printfn "intersectionSet = %A" intersectionSet
+printfn "differenceSet = %A" differenceSet
+printfn "symmetricDifferenceSet = %A" symmetricDifferenceSet
+printfn "ageMap = %A" ageMap
+printfn "updatedAgeMap = %A" updatedAgeMap
+printfn "removedAgeMap = %A" removedAgeMap
+printfn "age = %A" age
+printfn "hasAlice = %b" hasAlice
+printfn "aliceAge = %d" aliceAge
+printfn "evenNumbers = %A" evenNumbers
+printfn "sum = %d" sum
+printfn "increasedAges = %A" increasedAges
+printfn "totalSales = %d" totalSales
+printfn "wordCounts = %A" wordCounts
+```
+
+### 4. 컬렉션 함수: `map`, `filter`, `fold` (Collection Functions: `map`, `filter`, `fold`)
+
+* F#은 컬렉션 처리를 위한 `map`, `filter`, `fold`와 같은 강력한 함수를 제공합니다.
+* **`map`**: 컬렉션의 각 요소에 함수를 적용하여 새로운 컬렉션을 생성합니다.
+* **`filter`**: 지정된 조건(predicate)을 충족하는 요소만 선택하여 새로운 컬렉션을 생성합니다.
+* **`fold`**: 컬렉션의 요소를 결합하여 단일 값을 생성합니다.
+* 이러한 함수는 함수형 프로그래밍의 핵심이며, 선언적이고 간결한 데이터 조작을 가능하게 합니다.
+
+```fsharp
+// map 함수 (The map Function)
+// 리스트와 함께 사용 (Using map with Lists)
+let numbers = [1; 2; 3; 4; 5]
+let squaredNumbers = List.map (fun x -> x * x) numbers // [1; 4; 9; 16; 25]
+
+// 배열과 함께 사용 (Using map with Arrays)
+let numbersArray = [|1; 2; 3; 4; 5|]
+let doubledNumbersArray = Array.map (fun x -> x * 2) numbersArray // [|2; 4; 6; 8; 10|]
+
+// filter 함수 (The filter Function)
+// 리스트 필터링 (Filtering Lists)
+let evenNumbers = List.filter (fun x -> x % 2 = 0) numbers // [2; 4]
+
+// 배열 필터링 (Filtering Arrays)
+let oddNumbersArray = Array.filter (fun x -> x % 2 <> 0) numbersArray // [|1; 3; 5|]
+
+// fold 함수 (The fold Function)
+// 리스트 접기 (Folding Lists)
+let sum = List.fold (fun acc x -> acc + x) 0 numbers // 15
+
+// 배열 접기 (Folding Arrays)
+let product = Array.fold (fun acc x -> acc * x) 1 numbersArray // 120
+
+// 고급 예제 (Advanced Examples)
+// 레코드 리스트 처리 (Processing a List of Records)
+type Employee = { Name: string; Department: string; Salary: decimal }
+let employees = [
+    { Name = "Alice"; Department = "HR"; Salary = 50000M }
+    { Name = "Bob"; Department = "IT"; Salary = 60000M }
+    { Name = "Carol"; Department = "HR"; Salary = 55000M }
+    { Name = "Dave"; Department = "IT"; Salary = 70000M }
+]
+let hrTotalSalary =
+    employees
+    |> List.filter (fun e -> e.Department = "HR")
+    |> List.fold (fun acc e -> acc + e.Salary) 0M // 105000M
+
+// 데이터 변환 (Transforming Data)
+let names = ["Alice"; "Bob"; "Carol"]
+let totalLength =
+    names
+    |> List.map (fun name -> name.Length)
+    |> List.fold (fun acc length -> acc + length) 0 // 12
+
+// 결과 출력
+printfn "squaredNumbers = %A" squaredNumbers
+printfn "doubledNumbersArray = %A" doubledNumbersArray
+printfn "evenNumbers = %A" evenNumbers
+printfn "oddNumbersArray = %A" oddNumbersArray
+printfn "sum = %d" sum
+printfn "product = %d" product
+printfn "hrTotalSalary = %M" hrTotalSalary
+printfn "totalLength = %d" totalLength
+```

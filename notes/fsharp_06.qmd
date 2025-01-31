@@ -1,0 +1,311 @@
+---
+title: 모듈, 접근자 및 코드 구성
+subtitle: Modules, Accessors, and Code Organization
+description: |
+ F#에서는 모듈과 네임스페이스를 활용하여 코드를 체계적으로 구성하고, 접근 한정자를 통해 가시성을 제어하여 유지보수성과 모듈성을 높일 수 있다. 모듈은 관련된 함수와 타입을 그룹화하고, 네임스페이스는 프로젝트를 계층적으로 정리하는 데 사용된다. `public`, `private`, `internal` 접근 한정자를 적절히 활용하여 코드의 의도를 명확히 하고, 내부 구현을 캡슐화하여 외부 의존성을 최소화할 수 있다. 이러한 구조적 접근 방식은 대규모 애플리케이션에서도 코드의 명확성과 재사용성을 유지하는 데 도움이 된다.
+categories:
+  - Modules
+  - Accessors
+execute:
+  eval: false
+---
+
+이 문서는 F#에서 모듈과 네임스페이스를 사용하여 코드를 구성하고 구조화하는 방법에 대해 설명합니다. 또한 코드 구성, 접근 제어, 그리고 더 큰 응용 프로그램에서 가독성과 모듈성을 유지하기 위한 모범 사례를 강조합니다.
+
+### 1. 모듈 및 네임스페이스로 코드 구성 (Organizing Code into Modules and Namespaces)
+
+* F#에서 **모듈(modules)** 과 **네임스페이스(namespaces)** 는 코드를 구성하고 범위를 관리하는 데 필수적입니다.
+* **모듈**은 관련된 함수, 타입 및 값을 함께 그룹화하여 단일 파일 또는 여러 파일 내에서 논리적 구성을 허용합니다.
+* **네임스페이스**는 모듈을 그룹화하기 위한 계층 구조를 제공하여 더 큰 프로젝트를 위한 명확하고 체계적인 구조를 만듭니다.
+* 모듈과 네임스페이스는 이름 충돌을 방지하고 코드 구성 개선에 도움이 됩니다.
+
+```fsharp
+// 모듈 정의 (Defining a Module)
+module MathOperations =
+    let add x y = x + y
+    let subtract x y = x - y
+
+// 모듈 사용 (Using the Module)
+let sum = MathOperations.add 5 3
+let difference = MathOperations.subtract 5 3
+
+// 코드 구성을 위한 모듈 (Modules for Code Organization)
+module StringUtilities =
+    let toUpper (str: string) = str.ToUpper()
+    let toLower (str: string) = str.ToLower()
+
+module MathUtilities =
+    let square x = x * x
+    let cube x = x * x * x
+
+// 모듈 사용 (Using the Modules)
+let upperStr = StringUtilities.toUpper "hello"
+let squared = MathUtilities.square 4
+
+// 중첩 모듈 (Nested Modules)
+module Geometry =
+    module Circle =
+        let area radius = System.Math.PI * radius * radius
+        let circumference radius = 2.0 * System.Math.PI * radius
+
+    module Rectangle =
+        let area length width = length * width
+        let perimeter length width = 2 * (length + width)
+
+// 중첩 모듈 사용 (Using Nested Modules)
+let circleArea = Geometry.Circle.area 5.0
+let rectPerimeter = Geometry.Rectangle.perimeter 5.0 10.0
+
+// 네임스페이스 정의 (Defining a Namespace)
+namespace Utilities
+
+module MathOperations =
+    let multiply x y = x * y
+
+module StringOperations =
+    let reverse (str: string) = new string(Array.rev (str.ToCharArray()))
+
+// 여러 파일에 걸친 네임스페이스 (Namespaces Across Files)
+// 파일 1: Math.fs
+namespace Utilities
+
+module MathOperations =
+    let multiply x y = x * y
+
+// 파일 2: String.fs
+namespace Utilities
+
+module StringOperations =
+    let reverse (str: string) = new string(Array.rev (str.ToCharArray()))
+
+// 네임스페이스 및 모듈 사용 (Using Namespaces and Modules Together)
+open Utilities.MathOperations
+open Utilities.StringOperations
+
+let result = multiply 4 5
+let reversed = reverse "hello"
+
+// 결과 출력
+printfn "sum = %d" sum
+printfn "difference = %d" difference
+printfn "upperStr = %s" upperStr
+printfn "squared = %d" squared
+printfn "circleArea = %f" circleArea
+printfn "rectPerimeter = %f" rectPerimeter
+printfn "result = %d" result
+printfn "reversed = %s" reversed
+```
+
+### 2. 접근 한정자: Public, Private, Internal (Understanding Access Modifiers: Public, Private, Internal)
+
+* F#의 **접근 한정자(access modifiers)** 는 코드 요소의 가시성과 접근 가능성을 제어하여 의도된 캡슐화 및 정보 은닉이 유지되도록 보장합니다.
+* **`public`**: 코드 요소를 모듈 또는 네임스페이스 외부에서 액세스할 수 있도록 허용하여 응용 프로그램의 여러 부분에서 사용할 수 있도록 합니다.
+* **`private`**: 동일한 모듈 또는 클래스 내에서만 코드 요소에 접근하도록 제한하여 캡슐화를 촉진하고 코드베이스의 다른 부분에서 의도하지 않은 수정이나 상호 작용을 방지합니다.
+* **`internal`**: 단일 어셈블리 내에서 코드 요소에 대한 접근을 허용하여 배포 단위 내에서 균형을 유지합니다.
+
+```fsharp
+// Public 접근 한정자 (Public Access Modifier)
+module MathOperations =
+    // 기본적으로 Public (Public by Default)
+    let add x y = x + y
+
+    // 명시적으로 Public (Explicitly Marking as Public)
+    let public subtract x y = x - y
+
+// Private 접근 한정자 (Private Access Modifier)
+module MathOperations =
+    // Private 함수, 이 모듈 내에서만 접근 가능
+    let private secretMultiply x y = x * y
+    let square x = secretMultiply x x
+
+// Internal 접근 한정자 (Internal Access Modifier)
+module internal MathOperations =
+    let internal multiply x y = x * y
+    let public cube x = multiply x (multiply x x)
+
+// 클래스에서의 접근 한정자 (Access Modifiers in Classes)
+type Person(name: string, age: int) =
+    // Private 필드
+    let mutable privateAge = age
+
+    // Public 속성
+    member this.Name = name
+
+    // Internal 메서드
+    member internal this.IsAdult = privateAge >= 18
+
+    // Private 메서드
+    member private this.UpdateAge newAge =
+        privateAge <- newAge
+
+// 접근 한정자 사용 사례 (Use Cases for Access Modifiers)
+// Public: 라이브러리나 API와 같이 전체 응용 프로그램 또는 외부 소비자에게 널리 사용 가능해야 하는 기능에 사용
+// Private: 모듈 또는 클래스 내부용으로 의도된 구현 세부 정보를 숨기는 데 사용
+// Internal: 동일한 어셈블리 내에서 코드를 공유해야 하지만 외부 어셈블리에서는 접근할 수 없도록 해야 하는 경우에 사용
+
+// 혼합 접근 예제 (Example of Mixed Access)
+module internal DataProcessing =
+    let internal processData data =
+        // 복잡한 내부 로직
+        data |> List.map (fun x -> x * 2)
+
+    let public runDataPipeline data =
+        // 외부에서 이 함수만 접근 가능
+        processData data
+
+// 결과 출력
+open MathOperations
+printfn "add 5 3 = %d" (add 5 3)
+printfn "subtract 5 3 = %d" (subtract 5 3)
+printfn "square 5 = %d" (square 5)
+// printfn "secretMultiply 5 3 = %d" (secretMultiply 5 3) // 오류: secretMultiply는 private
+// printfn "InternalMath.add 2 3 = %d" (InternalMath.add 2 3) // 오류: add는 internal
+
+open DataProcessing
+let data = [1; 2; 3; 4; 5]
+printfn "runDataPipeline data = %A" (runDataPipeline data)
+```
+
+### 3. F#에서 대규모 애플리케이션 구조화 (Structuring Large Applications in F#)
+
+* 대규모 F# 애플리케이션을 관리하려면 효과적인 코드 구성이 중요합니다.
+* 모듈과 네임스페이스를 전략적으로 사용하여 복잡한 시스템을 더 작고 관리 가능한 구성 요소로 분해합니다.
+* 일관된 명명 규칙 및 구성 전략을 채택하고, 모듈은 목적과 기능을 반영하도록 이름을 지정해야 하며, 네임스페이스는 관련 모듈을 논리적으로 그룹화해야 합니다.
+* 코드를 별도의 파일이나 프로젝트로 구성하면 모듈성과 유지 관리성이 향상됩니다.
+
+```fsharp
+// 모듈화 (Modularization in F#)
+module MathOperations =
+    let add x y = x + y
+    let subtract x y = x - y
+
+module StringOperations =
+    let concat s1 s2 = s1 + s2
+    let length s = s.Length
+
+// 관심사 분리 (Separation of Concerns)
+// 도메인 로직 (Domain Logic)
+module ProductDomain =
+    type Product = { Id: int; Name: string; Price: decimal }
+    let calculateDiscount product discountRate =
+        product.Price * (1M - discountRate)
+
+// 데이터 접근 계층 (Data Access Layer)
+module ProductRepository =
+    let getProductById id =
+        // 데이터베이스에서 가져오기 시뮬레이션
+        { Id = id; Name = "Example Product"; Price = 100M }
+
+// 프레젠테이션 계층 (Presentation Layer)
+module ProductService =
+    open ProductDomain
+    open ProductRepository
+
+    let getProductWithDiscount id discountRate =
+        let product = getProductById id
+        let discountedPrice = calculateDiscount product discountRate
+        { product with Price = discountedPrice }
+
+// 대규모 프로젝트에 네임스페이스 및 모듈 사용 (Using Namespaces and Modules for Large Projects)
+namespace MyApp.Domain
+
+module ProductDomain =
+    type Product = { Id: int; Name: string; Price: decimal }
+    let calculateDiscount product discountRate =
+        product.Price * (1M - discountRate)
+
+namespace MyApp.Data
+
+module ProductRepository =
+    let getProductById id =
+        { Id = id; Name = "Example Product"; Price = 100M }
+
+// F#의 프로젝트 레이아웃 (Project Layout in F#)
+// (예: 기능별 그룹화, 계층 아키텍처, 도메인 주도 설계)
+
+// 계층 아키텍처 및 어니언 아키텍처 (Layered and Onion Architecture)
+// 코어 도메인 (Core Domain) (Inner Layer)
+namespace MyApp.Domain
+
+module ProductDomain =
+    type Product = { Id: int; Name: string; Price: decimal }
+    let calculateDiscount product discountRate =
+        product.Price * (1M - discountRate)
+
+// 인프라 (Infrastructure) (Outer Layer)
+namespace MyApp.Data
+
+module ProductRepository =
+    let getProductById id =
+        { Id = id; Name = "Example Product"; Price = 100M }
+
+// 종속성 관리 (Managing Dependencies)
+module ProductService =
+    let getProductWithDiscount (getProductById: int -> Product) id discountRate =
+        let product = getProductById id
+        let discountedPrice = product.Price * (1M - discountRate)
+        { product with Price = discountedPrice }
+
+// 결과 출력
+printfn "add 5 3 = %d" (MathOperations.add 5 3)
+printfn "subtract 5 3 = %d" (MathOperations.subtract 5 3)
+printfn "concat 'Hello' 'World' = %s" (StringOperations.concat "Hello" "World")
+printfn "length 'Hello' = %d" (StringOperations.length "Hello")
+
+let discountedProduct = ProductService.getProductWithDiscount ProductRepository.getProductById 1 0.1M
+printfn "Discounted product: %A" discountedProduct
+```
+
+### 4. 대규모 프로젝트의 범위 및 접근성 관리 (Managing Scope and Accessibility in Larger Projects)
+
+* 프로젝트 규모가 커지고 복잡해짐에 따라 범위 및 접근성 관리가 점점 더 중요해집니다.
+* F#의 모듈 및 네임스페이스 시스템은 코드 요소의 가시성을 제어하는 도구를 제공합니다.
+* 접근 한정자를 효과적으로 사용하면 캡슐화를 적용하고 내부 구현 세부 정보의 노출을 제한하는 데 도움이 됩니다.
+* 모듈 및 네임스페이스를 신중하게 구성하면 종속성을 관리하고 전반적인 코드 구성을 개선하는 데 도움이 됩니다.
+* 모범 사례에는 가능한 범위를 제한하고, 어셈블리 수준 접근에 `internal`을 사용하고, 명확한 추상화를 위해 캡슐화를 활용하고, 명확성을 위해 네임스페이스를 활용하고, 전역 상태를 최소화하는 것이 포함됩니다.
+
+```fsharp
+// 모듈을 사용한 범위 제어 (Controlling Visibility with Modules)
+module InternalCalculations =
+    // Private 함수, 이 모듈 외부에서 접근 불가
+    let private calculateInternalValue x y = x + y * 2
+
+    // Public 함수, 다른 모듈에서 접근 가능
+    let calculate x y = calculateInternalValue x y
+
+// 명확한 경계 (Clear Boundaries)
+module DataOperations =
+    // Private 함수, 이 모듈 내에서만 접근 가능
+    let private fetchData id =
+        // 데이터 가져오기 시뮬레이션
+        { Id = id; Name = "Sample" }
+
+    // Public 함수, 외부에서 접근 가능
+    let processData id =
+        let data = fetchData id
+        // 데이터 처리 및 반환
+        data.Name.ToUpper()
+
+// 네임스페이스를 사용한 대규모 애플리케이션 구성 (Organizing Large Applications with Namespaces)
+namespace MyApp.Core
+
+module Utilities =
+    let printMessage message =
+        printfn "Message: %s" message
+
+namespace MyApp.Services
+
+module DataService =
+    open MyApp.Core.Utilities
+
+    let displayData data =
+        printMessage (sprintf "Data: %s" data)
+
+// 결과 출력
+printfn "calculate 5 3 = %d" (InternalCalculations.calculate 5 3)
+// printfn "calculateInternalValue 5 3 = %d" (InternalCalculations.calculateInternalValue 5 3) // 오류: calculateInternalValue는 private
+printfn "processData 1 = %s" (DataOperations.processData 1)
+// printfn "fetchData 1 = %A" (DataOperations.fetchData 1) // 오류: fetchData는 private
+
+DataService.displayData "Example"
+```

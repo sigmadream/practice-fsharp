@@ -1,0 +1,194 @@
+---
+title: F# 시작하기
+subtitle: What is F#?
+description: |
+ F#은 .NET 플랫폼에서 실행되는 함수형 우선 프로그래밍 언어로, 간결한 구문과 강력한 형식 유추를 제공하며 C# 등과의 상호 운용성을 지원합니다. 순수 함수, 불변성, 패턴 매칭 등 함수형 프로그래밍 개념을 강조하며, 데이터 처리 및 도메인 모델링에 유용합니다. 개발 환경은 .NET SDK, Visual Studio, VS Code + Ionide 등을 통해 쉽게 설정할 수 있으며, F# Interactive(FSI)를 활용해 빠른 실험이 가능합니다. 기본 구문은 `let`으로 함수 정의, 레코드 및 판별 유니온 타입 활용, 제어 흐름과 패턴 매칭을 통해 직관적이고 효율적인 코드를 작성할 수 있도록 설계되었습니다.
+categories:
+  - Overview
+execute:
+  eval: false
+---
+
+### 1\. F\# 및 .NET 통합 개요 (Overview of F\# and .NET Integration)
+
+* F\#은 .NET 플랫폼에서 실행되는 강력한 함수형 우선 (functional-first) 프로그래밍 언어입니다.
+* Microsoft Research에서 개발되었으며, 함수형 프로그래밍 특징과 .NET 생태계의 광범위한 기능을 결합합니다.
+* F\#은 .NET 런타임의 기능을 활용하면서 함수형 프로그래밍 원칙을 강조합니다.
+* C\#, VB.NET과 같은 다른 .NET 언어와의 상호 운용성을 제공하여 혼합 언어 프로젝트에서 유연성을 제공합니다.
+* F\#은 간결한 구문과 강력한 형식 유추를 제공하며, 복잡한 데이터 처리 및 도메인 모델링 작업을 효율적으로 처리하도록 설계되었습니다.
+* F\# 프로그램은 .NET 생태계용으로 구축된 라이브러리 및 프레임워크와 원활하게 상호 작용할 수 있으므로 웹 개발에서 데이터 과학에 이르기까지 다양한 영역에서 작업하는 개발자에게 유용한 선택입니다.
+
+```fsharp
+// F#에서 C# 라이브러리 사용 예제
+open System.IO // C#의 System.IO 네임스페이스 사용
+
+let readFromFile filePath =
+    let lines = File.ReadAllLines(filePath) // C#의 File.ReadAllLines 메서드 사용
+    for line in lines do
+        printfn "%s" line
+
+// main 함수에서 실행
+[<EntryPoint>]
+let main argv =
+    let filePath = "example.txt" // 파일 경로 지정 (example.txt 파일이 프로젝트 폴더에 있어야 함)
+    readFromFile filePath // readFromFile 함수 호출
+    0 // 프로그램 종료 코드
+```
+
+### 2\. 함수형 우선 패러다임: 개념 및 원리
+
+* F\#의 함수형 우선 패러다임은 **순수 함수(pure functions)** 와 **불변 데이터 구조(immutable data structures)** 를 사용하여 프로그램을 작성하는 데 중점을 둡니다.
+* **함수형 프로그래밍**에서 함수는 **일급 시민(first-class citizens)** 이므로 인수로 전달, 값으로 반환, 변수에 할당될 수 있습니다.
+* **불변성(immutability)** 은 값이 설정되면 변경할 수 없음을 보장합니다.
+* **함수 순수성(function purity)** 은 함수가 동일한 입력에 대해 동일한 출력을 생성하고 **부작용(side effects)** 이 없음을 의미합니다.
+* 이러한 원칙은 더 쉽게 추론하고 테스트할 수 있는 코드를 작성하는 데 도움이 됩니다.
+
+```fsharp
+// 1. 순수 함수 (Pure Function)
+let add x y = x + y // 입력값에만 의존하고 부작용이 없는 순수 함수
+
+// 2. 불변성 (Immutability)
+let numbers = [1; 2; 3; 4; 5]
+let newNumbers = numbers @ [6; 7] // 기존 리스트를 변경하지 않고 새로운 리스트를 생성
+
+// 3. 일급 및 고차 함수 (First-Class and Higher-Order Functions)
+let applyFunction f x = f x
+let increment x = x + 1
+let result = applyFunction increment 5 // increment 함수를 applyFunction에 전달
+
+// 4. 함수 구성 (Function Composition)
+let square x = x * x
+let double x = x * 2
+let squaredAndDoubled = square >> double // square 함수의 결과를 double 함수에 전달하도록 합성
+let result2 = squaredAndDoubled 3
+
+// 5. 선언적 스타일 (Declarative Style)
+let numbers = [1; 2; 3; 4; 5; 6]
+let sumEvenNumbers = numbers |> List.filter (fun x -> x % 2 = 0) |> List.sum // 짝수를 필터링하고 합계를 구함
+
+// 6. 형식 유추 (Type Inference)
+let square x = x * x // x의 타입을 int로 자동 유추
+
+// 7. 패턴 매칭 (Pattern Matching)
+let describeNumber x =
+    match x with
+    | 0 -> "Zero"
+    | 1 -> "One"
+    | _ -> "Other"
+
+// 결과 출력
+printfn "add(2, 3) = %d" (add 2 3)
+printfn "numbers = %A" numbers
+printfn "newNumbers = %A" newNumbers
+printfn "applyFunction increment 5 = %d" result
+printfn "squaredAndDoubled 3 = %d" result2
+printfn "sumEvenNumbers = %d" sumEvenNumbers
+printfn "describeNumber 0 = %s" (describeNumber 0)
+printfn "describeNumber 1 = %s" (describeNumber 1)
+printfn "describeNumber 2 = %s" (describeNumber 2)
+```
+
+### 3\. F\# 설치, 설정 및 도구 (Installation, Setup, and Tooling for F\#)
+
+* F\# 프로그래밍을 시작하려면 적절한 도구를 사용하여 개발 환경을 설정해야 합니다.
+* F\# 개발을 위한 주요 도구는 **Visual Studio**이며, F\# 프로젝트, 디버깅 및 테스트를 지원하는 포괄적인 IDE를 제공합니다.
+* **Visual Studio Code**와 **Ionide 확장 프로그램**은 더 가벼운 크로스 플랫폼 경험을 위한 또 다른 인기 있는 선택입니다.
+* 설치에는 F\# 컴파일러 및 라이브러리가 포함된 **.NET SDK**를 다운로드하고 설치하는 작업이 포함됩니다.
+* 설치가 완료되면 `dotnet new console -lang F#`과 같은 명령줄 도구를 사용하여 F\# 프로젝트를 생성하거나, 더 복잡한 응용 프로그램을 위해 IDE의 프로젝트 템플릿을 사용할 수 있습니다.
+
+1. **설치**:
+
+      * .NET SDK: [https://dotnet.microsoft.com/download](https://www.google.com/url?sa=E&source=gmail&q=https://dotnet.microsoft.com/download) 에서 .NET SDK를 다운로드하여 설치합니다.
+      * Visual Studio: [https://visualstudio.microsoft.com/](https://www.google.com/url?sa=E&source=gmail&q=https://visualstudio.microsoft.com/) 에서 Visual Studio를 다운로드하여 설치합니다. 설치 중 ".NET 데스크톱 개발" 워크로드를 선택합니다.
+      * Visual Studio Code + Ionide: [https://code.visualstudio.com/](https://www.google.com/url?sa=E&source=gmail&q=https://code.visualstudio.com/) 에서 Visual Studio Code를 설치하고, Extensions 탭에서 Ionide-fsharp를 검색하여 설치합니다.
+      * JetBrains Rider: [https://www.jetbrains.com/rider/](https://www.google.com/url?sa=E&source=gmail&q=https://www.jetbrains.com/rider/) 에서 JetBrains Rider를 다운로드하여 설치합니다.
+
+2. **설치 확인 및 프로젝트 생성 (터미널 또는 명령 프롬프트 사용):**
+
+    ```bash
+    # 설치 확인
+    dotnet --version
+
+    # 새 F# 콘솔 애플리케이션 생성
+    dotnet new console -lang "F#" -o MyFSharpApp
+
+    # 프로젝트 폴더로 이동
+    cd MyFSharpApp
+
+    # 애플리케이션 실행
+    dotnet run
+    ```
+
+3. **F\# Interactive (FSI) 사용:**
+
+    ```bash
+    dotnet fsi
+    ```
+
+    FSI를 사용하면 전체 프로젝트를 생성하지 않고도 F\# 코드 조각을 빠르게 테스트할 수 있습니다.
+
+### 4\. F\# 구문 및 기본 프로그램 구조 (F\# Syntax and Basic Program Structure)
+
+* F\# 구문은 함수형 프로그래밍 정신에 맞게 간결하고 표현력이 뛰어나도록 설계되었습니다.
+* 기본 F\# 프로그램은 관련된 함수 및 형식을 위한 네임스페이스 역할을 하는 모듈을 정의하는 것으로 시작합니다.
+* 함수는 `let` 키워드를 사용하여 정의되고, 데이터는 F\#의 함수형 패러다임의 중심인 불변 구조를 사용하여 처리됩니다.
+
+```fsharp
+// F# 구문 및 기본 프로그램 구조
+
+module Program // 모듈 정의
+
+// 함수 정의
+let greet name =
+    sprintf "Hello, %s!" name
+
+// 여러 매개변수 (커링)
+let multiply x y = x * y
+
+// 부분 적용
+let double = multiply 2
+
+// 레코드 타입
+type Person = {
+    Name: string
+    Age: int
+}
+
+// 레코드 생성
+let person = { Name = "Alice"; Age = 30 }
+
+// 판별 유니온
+type Shape =
+    | Circle of radius: float
+    | Rectangle of width: float * height: float
+
+// 제어 흐름 (if-then-else)
+let describeNumber n =
+    if n > 0 then "Positive"
+    elif n < 0 then "Negative"
+    else "Zero"
+
+// 패턴 매칭
+let describeShape shape =
+    match shape with
+    | Circle(radius) -> sprintf "Circle with radius %f" radius
+    | Rectangle(width, height) -> sprintf "Rectangle %f by %f" width height
+
+// 오류 처리 (Option 타입)
+let divide x y =
+    if y = 0 then None
+    else Some (x / y)
+
+// 프로그램 진입점
+[<EntryPoint>]
+let main argv =
+    printfn "Hello, World!" // 콘솔에 출력
+    printfn "%s" (greet "World") // greet 함수 호출
+    printfn "double 5 = %d" (double 5) // 부분 적용된 double 함수 호출
+    printfn "Person: %A" person // 레코드 출력
+    printfn "describeNumber 5 = %s" (describeNumber 5) // describeNumber 함수 호출
+    printfn "describeShape (Circle 5.0) = %s" (describeShape (Circle 5.0)) // describeShape 함수 호출
+    printfn "divide 10 2 = %A" (divide 10 2) // divide 함수 호출
+    printfn "divide 10 0 = %A" (divide 10 0) // divide 함수 호출
+    0 // 정수 종료 코드 반환
+```

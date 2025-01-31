@@ -1,0 +1,331 @@
+---
+title: 클래스, 열거형 및 객체 지향
+subtitle: Classes, Enums, and Object-Oriented
+description: |
+ F#에서는 객체 지향 프로그래밍(OOP)과 함수형 프로그래밍을 결합하여 유연한 소프트웨어를 개발할 수 있다. 클래스는 `type` 키워드로 정의되며, 속성, 메서드, 생성자를 통해 데이터를 캡슐화하고 조작할 수 있다. 또한, 상속, 추상 클래스, 인터페이스를 지원하여 OOP의 장점을 제공하며, 열거형과 구분된 공용 구조체(Discriminated Unions)를 활용하여 더욱 표현력 있는 데이터 모델링이 가능하다. F#에서는 OOP와 함수형 개념을 함께 사용하여 유지보수성이 뛰어난 코드 작성이 가능하며, 고차 함수, 패턴 매칭, 데이터 파이프라인과 같은 함수형 기법을 활용하여 더욱 강력하고 직관적인 프로그램을 만들 수 있다.
+categories:
+  - Classes
+  - Enums
+  -  Object-Oriented
+execute:
+  eval: false
+---
+
+이 문서는 F#에서 객체 지향 프로그래밍(OOP) 원칙을 사용하는 방법, 특히 클래스, 열거형 및 객체 지향 구조를 F#의 함수형 프로그래밍 기능과 함께 활용하는 방법을 설명합니다.
+
+### 1. F#에서 클래스 정의 (Defining Classes in F#)
+
+* F#은 **클래스(classes)** 를 사용하여 객체 지향 프로그래밍을 지원하며, 이를 통해 복잡한 데이터와 동작을 체계적인 방식으로 모델링할 수 있습니다.
+* 클래스는 데이터와 메서드를 캡슐화하여 캡슐화 및 상속과 같은 핵심 OOP 원칙을 지원합니다.
+* 클래스를 정의함으로써, 잘 정의된 인터페이스를 통해 응용 프로그램의 다른 부분과 상호 작용하는 재사용 가능하고 모듈식 구성 요소를 만들 수 있습니다.
+* F#에서 클래스는 `type` 키워드, 클래스 이름, 멤버(필드, 속성, 메서드, 생성자)를 사용하여 정의됩니다.
+
+```fsharp
+// 기본 클래스 정의 (Defining a Basic Class)
+type Person(name: string, age: int) =
+    // 필드 (Fields)
+    let mutable _age = age
+
+    // 속성 (Properties)
+    member this.Name = name
+    member this.Age
+        with get() = _age
+        and set(value) = _age <- value
+
+    // 메서드 (Method)
+    member this.Greet() =
+        printfn "Hello, my name is %s and I am %d years old." name _age
+
+    // 생성자 (Constructor)
+    new(name: string) = Person(name, 0)
+
+// 클래스 인스턴스 생성 및 사용 (Creating and Using Class Instances)
+// Person 인스턴스 생성
+let person1 = Person("Alice", 30)
+let person2 = Person("Bob")
+
+// 인스턴스 메서드 및 속성 사용
+person1.Greet()
+person2.Age <- 25
+printfn "%s is now %d years old." person2.Name person2.Age
+
+// F#의 상속 (Inheritance in F#)
+type Employee(name: string, age: int, position: string) =
+    inherit Person(name, age)
+
+    // 속성 (Property)
+    member this.Position = position
+
+    // 메서드 (Method)
+    member this.DisplayInfo() =
+        printfn "Employee: %s, Age: %d, Position: %s" this.Name this.Age position
+
+// 추상 클래스 및 인터페이스 (Abstract Classes and Interfaces)
+[<AbstractClass>]
+type Shape() =
+    // 추상 멤버 (Abstract method)
+    abstract member Area: float
+
+    // 메서드 (Method)
+    member this.Describe() =
+        printfn "This shape has an area of %f." this.Area
+
+// 추상 클래스 구현 (Implementing Abstract Class)
+type Circle(radius: float) =
+    inherit Shape()
+    override this.Area = Math.PI * radius * radius
+
+// F#의 인터페이스 (Interfaces in F#)
+type IShape =
+    abstract member Area: float
+    abstract member Perimeter: float
+
+type Rectangle(width: float, height: float) =
+    interface IShape with
+        member this.Area = width * height
+        member this.Perimeter = 2.0 * (width + height)
+
+// OOP와 함수형 프로그래밍 결합 (Combining OOP with Functional Programming)
+// (예: 클래스 내에서 불변성 사용, 객체 메서드 내에서 고차 함수 사용, 메서드 내에서 패턴 매칭 사용)
+
+// 결과 출력
+let employee = Employee("John", 30, "Manager")
+employee.DisplayInfo()
+
+let circle = Circle(5.0)
+printfn "Circle area: %f" circle.Area
+
+let rectangle = Rectangle(4.0, 6.0)
+printfn "Rectangle area: %f" (rectangle :> IShape).Area
+printfn "Rectangle perimeter: %f" (rectangle :> IShape).Perimeter
+```
+
+### 2. 열거형 및 구분된 공용 구조체 구현 (Implementing Enums and Discriminated Unions)
+
+* **열거형(Enums)** 은 프로그램 내에서 서로 다른 상태 또는 타입을 모델링하는 강력한 구조입니다.
+* 열거형은 명명된 값 집합을 나타내며, 변수가 가질 수 있는 값을 정의하는 방법을 제공합니다.
+* **구분된 공용 구조체(Discriminated Unions)** 는 여러 명명된 케이스 중 하나를 가질 수 있는 타입을 정의할 수 있는 더 유연한 구조입니다. 각 케이스는 고유한 데이터를 가질 수 있습니다.
+* 구분된 공용 구조체는 복잡한 데이터 구조를 표현하는 데 적합하며 F#의 함수형 프로그래밍 기능의 핵심 기능입니다.
+* **패턴 매칭(pattern matching)** 과 함께 사용하여 다양한 케이스와 데이터 구조를 명확하고 간결하게 처리할 수 있습니다.
+
+```fsharp
+// F#의 열거형 (Enums in F#)
+type DayOfWeek =
+    | Sunday
+    | Monday
+    | Tuesday
+    | Wednesday
+    | Thursday
+    | Friday
+    | Saturday
+
+let isWeekend (day: DayOfWeek) =
+    match day with
+    | Sunday | Saturday -> true
+    | _ -> false
+
+// 구분된 공용 구조체 (Discriminated Unions)
+type Shape =
+    | Circle of float  // 반지름
+    | Rectangle of float * float  // 가로 및 세로
+    | Triangle of float * float * float  // 세 변의 길이
+
+let area (shape: Shape) =
+    match shape with
+    | Circle(radius) -> Math.PI * radius * radius
+    | Rectangle(width, height) -> width * height
+    | Triangle(a, b, c) ->
+        // 헤론의 공식을 사용하여 삼각형의 넓이 계산
+        let s = (a + b + c) / 2.0
+        Math.Sqrt(s * (s - a) * (s - b) * (s - c))
+
+// 열거형과 구분된 공용 구조체의 차이점 (Differences Between Enums and Discriminated Unions)
+// (예: 열거형은 추가 데이터를 전달하지 않는 고정된 명명된 값 집합을 나타내는 데 적합,
+// 구분된 공용 구조체는 다양한 데이터 타입을 나타낼 수 있고 복잡한 데이터 구조 및 상태를 모델링하는 데 유용)
+
+// 구분된 공용 구조체의 실용적인 예 (Practical Examples of Discriminated Unions)
+type HttpResponse =
+    | Success of int * string  // 상태 코드 및 본문
+    | NotFound
+    | Error of string  // 오류 메시지
+
+let handleResponse (response: HttpResponse) =
+    match response with
+    | Success(statusCode, body) ->
+        printfn "Success! Status: %d, Body: %s" statusCode body
+    | NotFound ->
+        printfn "Resource not found."
+    | Error(message) ->
+        printfn "Error: %s" message
+
+// 열거형과 구분된 공용 구조체 결합 (Combining Enums and Discriminated Unions)
+type Status =
+    | Active
+    | Inactive
+    | Pending
+
+type User =
+    { Name: string
+      Status: Status }
+
+let printUserStatus (user: User) =
+    match user.Status with
+    | Active -> printfn "%s is active." user.Name
+    | Inactive -> printfn "%s is inactive." user.Name
+    | Pending -> printfn "%s's status is pending." user.Name
+
+// 결과 출력
+printfn "Is it weekend? %b" (isWeekend Friday)
+printfn "Circle area: %f" (area (Circle 5.0))
+handleResponse (Success(200, "Some content"))
+let user = { Name = "Alice"; Status = Active }
+printUserStatus user
+```
+
+### 3. 속성, 메서드 및 인덱서 (Properties, Methods, and Indexers)
+
+* F#에서 **속성(properties)**, **메서드(methods)**, **인덱서(indexers)** 는 클래스, 레코드 및 기타 타입에서 동작을 캡슐화하고 데이터에 접근하는 방법을 제공합니다.
+* 속성은 클래스 내에서 데이터 접근 및 조작을 캡슐화하여 내부 상태에 대한 제어된 접근을 허용합니다.
+* 메서드는 클래스가 수행할 수 있는 동작 및 연산을 정의하여 클래스의 데이터와 관련된 기능을 캡슐화합니다.
+* 인덱서는 객체가 배열처럼 인덱싱되도록 하는 특수한 속성입니다.
+
+```fsharp
+// 속성 (Properties)
+type Person(name: string, age: int) =
+    member val Name = name with get, set
+    member val Age = age with get, set
+
+// 사용자 정의 getter 및 setter (Custom Getters and Setters)
+type Person(name: string, age: int) =
+    let mutable _age = age
+    member this.Age
+        with get() = _age
+        and set(value) =
+            if value >= 0 then _age <- value
+            else failwith "Age cannot be negative"
+
+// 메서드 (Methods)
+type Person(name: string, age: int) =
+    member val Name = name with get, set
+    member val Age = age with get, set
+    member this.Greet() =
+        sprintf "Hello, my name is %s and I am %d years old." this.Name this.Age
+
+// 메서드 오버로딩 (Overloading Methods)
+type MathOperations() =
+    member this.Add(x: int, y: int) = x + y
+    member this.Add(x: float, y: float) = x + y
+
+// 인덱서 (Indexers)
+type StringCollection() =
+    let data = System.Collections.Generic.Dictionary<int, string>()
+    member this.Item
+        with get(index: int) =
+            if data.ContainsKey(index) then data.[index]
+            else failwith "Index out of range"
+        and set(index: int) (value: string) =
+            data.[index] <- value
+
+// 읽기 전용 속성 (Readonly Properties)
+type Circle(radius: float) =
+    member this.Radius = radius
+    member this.Area = System.Math.PI * radius * radius
+
+// 정적 속성 및 메서드 (Static Properties and Methods)
+type MathOperations() =
+    static member Add(x: int, y: int) = x + y
+
+// 결과 출력
+let person = Person("Alice", 30)
+printfn "%s" (person.Greet())
+
+let mathOps = MathOperations()
+printfn "Add (int): %d" (mathOps.Add(3, 5))
+printfn "Add (float): %f" (mathOps.Add(3.0, 5.0))
+
+let collection = StringCollection()
+collection.[0] <- "Hello"
+printfn "collection.[0]: %s" collection.[0]
+
+let circle = Circle(5.0)
+printfn "Circle area: %f" circle.Area
+
+printfn "Static Add: %d" (MathOperations.Add(3, 5))
+```
+
+### 4. 객체 지향 프로그래밍과 함수형 프로그래밍 결합 (Combining Object-Oriented Programming with Functional Programming)
+
+* F#은 객체 지향 프로그래밍과 함수형 프로그래밍의 원활한 결합을 허용합니다.
+* 이러한 하이브리드 접근 방식을 통해 개발자는 클래스 및 상속과 같은 OOP 구문과 불변성 및 고차 함수와 같은 함수형 기능을 함께 활용할 수 있습니다.
+* 두 패러다임의 장점을 활용하여 견고하고 유지 관리가 쉬운 응용 프로그램을 만들 수 있습니다.
+
+```fsharp
+// 객체와 불변 데이터 사용 (Using Immutable Data with Objects)
+type Person(name: string, age: int) =
+    member val Name = name with get, set
+    member val Age = age with get, set
+    member this.WithUpdatedAge newAge =
+        Person(this.Name, newAge)  // 업데이트된 나이를 가진 새 Person 인스턴스 반환
+
+// 클래스와 고차 함수 결합 (Combining Classes with Higher-Order Functions)
+type Calculator() =
+    member this.ApplyOperation op x y =
+        op x y  // 연산은 함수로 전달됨
+
+// 메서드에서 패턴 매칭 사용 (Pattern Matching in Methods)
+type Shape =
+    | Circle of radius: float
+    | Rectangle of length: float * width: float
+
+type ShapeCalculator() =
+    member this.Area(shape: Shape) =
+        match shape with
+        | Circle r -> System.Math.PI * r * r
+        | Rectangle (l, w) -> l * w
+
+// 인터페이스 및 함수형 프로그래밍 (Interfaces and Functional Programming)
+type IOperation =
+    abstract member Execute: int -> int -> int
+
+type AddOperation() =
+    interface IOperation with
+        member this.Execute x y = x + y
+
+// 부분 적용 및 메서드 (Partial Application and Methods)
+type MathOperations() =
+    member this.Add x y = x + y
+
+// 데이터 파이프라인 구축 (Building a Data Pipeline)
+type PipelineStage<'T>(process: 'T -> 'T) =
+    member this.Process = process
+
+type DataPipeline<'T>(stages: PipelineStage<'T> list) =
+    member this.Execute(input: 'T) =
+        stages |> List.fold (fun acc stage -> stage.Process acc) input
+
+// 결과 출력
+let person = Person("Alice", 30)
+let updatedPerson = person.WithUpdatedAge 31
+printfn "Updated person's age: %d" updatedPerson.Age
+
+let calc = Calculator()
+printfn "Addition result: %d" (calc.ApplyOperation (+) 3 5)
+
+let shapeCalc = ShapeCalculator()
+let circle = Circle 5.0
+printfn "Circle area: %f" (shapeCalc.Area circle)
+
+let operation = AddOperation() :> IOperation
+printfn "Operation result: %d" (operation.Execute 4 5)
+
+let addFive = MathOperations().Add 5  // Add 메서드를 부분 적용
+printfn "Add five to 10: %d" (addFive 10)
+
+// 파이프라인 단계 정의
+let stage1 = PipelineStage(fun x -> x + 1)
+let stage2 = PipelineStage(fun x -> x * 2)
+
+// 파이프라인 생성 및 실행
+let pipeline = DataPipeline([stage1; stage2])
+printfn "Pipeline result: %d" (pipeline.Execute(5)) // 12 반환
+```

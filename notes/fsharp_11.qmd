@@ -1,0 +1,266 @@
+---
+title: 함수형 프로그래밍
+subtitle: Functional Programming
+description: |
+ F#의 함수형 프로그래밍은 순수 함수, 불변성, 함수 합성 및 고차 함수를 활용하여 선언적이고 가독성이 높은 코드를 작성하는 데 중점을 둔다. 함수 파이프라인과 커링을 통해 데이터를 변환하는 과정이 직관적으로 표현되며, 동시성 및 병렬 처리가 용이하다. 또한, 불변성을 유지함으로써 상태 변경으로 인한 부작용을 최소화하고 유지보수성을 높일 수 있다. 이를 통해 데이터 처리, 금융 시스템, 웹 개발, UI 구성 등 다양한 분야에서 함수형 프로그래밍이 강력한 장점을 발휘한다.
+categories:
+  - FP
+execute:
+  eval: false
+---
+
+### 1. F# 함수형 프로그래밍의 핵심 원칙 (Core Principles of Functional Programming)
+
+* F#의 함수형 프로그래밍은 **함수를 일급 시민(first-class citizens)** 으로 취급하고 **순수 함수(pure functions)**, **불변성(immutability)**, **함수 합성(function composition)** 을 사용하는 원칙을 기반으로 합니다.
+* **순수 함수**는 동일한 입력에 항상 동일한 출력을 생성하고 부작용이 없어 예측 가능성과 테스트 용이성을 향상시킵니다.
+* **불변성**은 데이터 구조가 생성 후 수정되지 않음을 의미합니다. 대신, 데이터 구조를 변경하는 대신 새로운 버전이 생성되어 의도하지 않은 부작용을 방지합니다.
+* **함수 합성**은 간단한 함수를 결합하여 더 복잡한 연산을 구축하는 것을 의미하며, 모듈성과 재사용성을 촉진합니다.
+
+```fsharp
+// 불변성 (Immutability)
+let x = 10
+let y = x + 5 // x를 변경하는 대신 새로운 값 y를 생성
+
+// 순수 함수 (Pure Functions)
+let add a b = a + b // 입력에만 의존하고 부작용이 없음
+
+// 부작용이 있는 비순수 함수 (Impure Function with Side Effect)
+let mutable counter = 0
+let addAndLog a b =
+    let result = a + b
+    printfn "Result: %d" result // 부작용: 콘솔에 출력
+    result
+
+// 일급 함수 및 고차 함수 (First-Class and Higher-Order Functions)
+let applyTwice f x = f (f x) // 함수를 인수로 받는 고차 함수
+let increment x = x + 1
+
+// 재귀 (Recursion)
+let rec factorial n =
+    if n <= 1 then 1
+    else n * factorial (n - 1)
+
+// 함수 합성 (Function Composition)
+let multiplyByTwo x = x * 2
+let addThree x = x + 3
+let combined = multiplyByTwo >> addThree // 함수를 합성하여 새로운 함수 생성
+
+// 선언적 스타일 (Declarative Style)
+let numbers = [1; 2; 3; 4; 5; 6]
+let evens = numbers |> List.filter (fun x -> x % 2 = 0) // 짝수 필터링
+let doubled = evens |> List.map (fun x -> x * 2) // 각 짝수를 2배
+
+// 결과 출력
+printfn "y = %d" y
+printfn "add 2 3 = %d" (add 2 3)
+printfn "addAndLog 2 3 = %d" (addAndLog 2 3)
+printfn "applyTwice increment 5 = %d" (applyTwice increment 5)
+printfn "factorial 5 = %d" (factorial 5)
+printfn "combined 5 = %d" (combined 5)
+printfn "evens = %A" evens
+printfn "doubled = %A" doubled
+```
+
+### 2. 순수 함수 작성 및 불변성 활용 (Writing Pure Functions and Utilizing Immutability)
+
+* F#에서 **순수 함수(pure functions)** 작성은 입력에만 의존하고 외부 상태를 변경하지 않는 함수를 만드는 것입니다.
+* **불변성(immutability)** 은 함수형 프로그래밍의 중요한 측면으로, F#에서는 리스트 및 레코드와 같은 데이터 구조가 기본적으로 불변입니다.
+* 즉, 이러한 구조를 수정하면 기존 데이터를 변경하는 대신 새로운 구조가 생성됩니다.
+* 이러한 관행은 코드 안정성을 향상시키고 응용 프로그램 전체에서 데이터 조작 방식을 단순화합니다.
+
+```fsharp
+// 순수 함수 (Pure Functions)
+let square x = x * x // 입력에만 의존, 부작용 없음
+
+// 부작용 (Side Effects)
+let mutable counter = 0
+let incrementCounter () =
+    counter <- counter + 1 // 부작용: 전역 변수 counter 변경
+
+// 순수 함수로 부작용 피하기 (Avoiding Side Effects with Pure Function)
+let incrementCounter counter = counter + 1
+
+// F#에서 불변성 활용 (Leveraging Immutability in F#)
+let name = "Alice" // name은 불변, 재할당 불가
+
+// 가변 변수 (Mutable Variables)
+let mutable age = 30
+age <- age + 1 // age는 가변, 재할당 가능
+
+// 불변 데이터 구조 (Immutable Data Structures)
+let originalList = [1; 2; 3; 4; 5]
+let modifiedList = 0 :: originalList // originalList를 변경하지 않고 0이 추가된 새 리스트 생성
+
+// 레코드 (Records)
+type Person = { Name: string; Age: int }
+let person = { Name = "Alice"; Age = 30 }
+let updatedPerson = { person with Age = 31 } // person을 변경하지 않고 Age가 업데이트된 새 레코드 생성
+
+// 불변성과 재귀 및 데이터 처리 결합 (Combining Immutability with Recursion and Data Processing)
+let rec filterEvens lst =
+    match lst with
+    | [] -> []
+    | head :: tail ->
+        if head % 2 = 0 then
+            head :: filterEvens tail
+        else
+            filterEvens tail
+
+// 결과 출력
+printfn "square 4 = %d" (square 4)
+printfn "originalList = %A" originalList
+printfn "modifiedList = %A" modifiedList
+printfn "person = %A" person
+printfn "updatedPerson = %A" updatedPerson
+printfn "filterEvens [1; 2; 3; 4; 5] = %A" (filterEvens [1; 2; 3; 4; 5])
+```
+
+### 3. 함수 파이프라인 및 고차 함수 (Function Pipelines and Higher-Order Functions)
+
+* **함수 파이프라인(function pipelines)** 은 F# 함수형 프로그래밍의 필수적인 부분으로, 한 함수의 출력을 다른 함수의 입력으로 전달하여 함수를 연결할 수 있도록 합니다.
+* **고차 함수(higher-order functions)** 는 다른 함수를 인수로 받거나 함수를 반환하는 함수입니다.
+* 고차 함수는 추상화 및 재사용 가능한 코드 패턴을 가능하게 하여 함수형 프로그래밍에 유연성과 강력함을 제공합니다.
+* 예를 들어 컬렉션에서 작동하는 함수는 지정된 함수를 각 요소에 적용하여 변환 및 처리를 간결하게 수행할 수 있습니다.
+
+```fsharp
+// 함수 파이프라인 (Function Pipelines)
+let result =
+    [1; 2; 3; 4; 5]
+    |> List.filter (fun x -> x % 2 = 0) // 짝수 필터링
+    |> List.map (fun x -> x * 2) // 짝수를 2배
+
+// 사용자 정의 함수를 사용한 파이프라인 구축 (Building Pipelines with Custom Functions)
+let addFive x = x + 5
+let multiplyByThree x = x * 3
+let result =
+    [1; 2; 3; 4; 5]
+    |> List.map addFive
+    |> List.map multiplyByThree
+
+// 고차 함수 (Higher-Order Functions)
+let applyTwice f x =
+    f (f x)
+
+// 커링 및 부분 적용 (Currying and Partial Application)
+let multiply x y = x * y
+let double = multiply 2 // 부분 적용
+
+// 고차 함수의 실제 사용 사례 (Practical Use Cases for Higher-Order Functions and Pipelines)
+type Customer = { Name: string; Balance: float }
+let customers =
+    [
+        { Name = "Alice"; Balance = 150.0 }
+        { Name = "Bob"; Balance = 50.0 }
+        { Name = "Charlie"; Balance = 200.0 }
+    ]
+
+let tax rate balance = balance * (1.0 + rate)
+
+let result =
+    customers
+    |> List.filter (fun customer -> customer.Balance > 100.0) // 잔액이 100.0 초과인 고객 필터링
+    |> List.map (fun customer -> { customer with Balance = tax 0.05 customer.Balance }) // 세금 적용
+    |> List.sumBy (fun customer -> customer.Balance) // 잔액 합계
+
+// 함수 합성 (Function Composition)
+let addOne x = x + 1
+let square x = x * x
+let addOneThenSquare = addOne >> square // addOne을 먼저 적용한 다음 square를 적용
+
+// 결과 출력
+printfn "Result: %A" result
+printfn "applyTwice increment 3 = %d" (applyTwice increment 3)
+printfn "double 5 = %d" (double 5)
+printfn "Result (tax calculation): %f" result
+printfn "addOneThenSquare 3 = %d" (addOneThenSquare 3)
+```
+
+### 4. F# 함수형 프로그래밍의 실제 적용 및 이점 (Practical Applications and Benefits of Functional Programming in F#)
+
+* F#의 함수형 프로그래밍은 특히 **복잡한 데이터 조작** 및 **동시 처리**와 관련된 시나리오에서 상당한 이점을 제공합니다.
+* 순수 함수와 불변성에 대한 강조는 **예측 가능하고 테스트 가능한 코드**를 만듭니다.
+* 함수형 프로그래밍의 불변적 특성은 변경 가능한 상태에 대한 종속성을 줄여 **동시 실행**과 관련된 문제(예: 경합 조건)를 방지하여 동시 프로그램을 더 안전하고 신뢰할 수 있도록 합니다.
+* 함수형 프로그래밍은 **데이터 처리, 구성, UI 개발 및 쿼리 언어**와 같은 광범위한 응용 분야에 적합합니다.
+
+```fsharp
+// 불변성 (Immutability)
+let originalList = [1; 2; 3; 4; 5]
+let newList = originalList |> List.map (fun x -> x * 2) // originalList는 변경되지 않고, 새 리스트 newList 생성
+
+// 순수 함수 (Pure Functions)
+let add x y = x + y // 입력에만 의존하고 부작용이 없는 순수 함수
+
+// 고차 함수 (Higher-Order Functions)
+let applyToEach f list =
+    List.map f list
+
+// 함수 합성 (Function Composition)
+let addOne x = x + 1
+let square x = x * x
+let addOneThenSquare = addOne >> square // addOne과 square를 합성
+
+// 실제 적용 (Practical Applications)
+// 데이터 처리 (Data Processing)
+type Transaction = { Id: int; Amount: float; IsValid: bool }
+let transactions =
+    [
+        { Id = 1; Amount = 100.0; IsValid = true }
+        { Id = 2; Amount = -50.0; IsValid = false }
+        { Id = 3; Amount = 200.0; IsValid = true }
+    ]
+
+let validTransactions =
+    transactions
+    |> List.filter (fun t -> t.IsValid)
+    |> List.map (fun t -> t.Amount)
+    |> List.sum
+
+// 구성 (Configuration)
+let config =
+    [ "server" => "localhost"
+      "port" => 8080
+      "database" => "mydb" ]
+    |> Map.ofList
+
+// 선언적 UI 개발 (Declarative UI Development)
+open System.Windows.Forms
+
+let myForm =
+    Form.create [
+        Label.create "Name:"
+        TextBox.create ()
+        Button.create "Submit"
+    ]
+
+// 선언적 쿼리 언어 (Declarative Query Languages)
+type Employee = {
+    Id: int
+    Name: string
+    Department: string
+    Salary: float
+}
+
+let employees: Employee list = [
+    { Id = 1; Name = "Alice"; Department = "HR"; Salary = 50000.0 }
+    { Id = 2; Name = "Bob"; Department = "IT"; Salary = 60000.0 }
+    { Id = 3; Name = "Carol"; Department = "IT"; Salary = 70000.0 }
+    { Id = 4; Name = "Dave"; Department = "Marketing"; Salary = 55000.0 }
+]
+
+let itDepartmentSalaries =
+    employees
+    |> List.filter (fun e -> e.Department = "IT")
+    |> List.map (fun e -> e.Salary)
+    |> List.average
+
+// 결과 출력
+printfn "Original List: %A" originalList
+printfn "New List: %A" newList
+printfn "add 5 3 = %d" (add 5 3)
+let squares = applyToEach square [1; 2; 3; 4]
+printfn "Squares: %A" squares
+printfn "addOneThenSquare 3 = %d" (addOneThenSquare 3)
+printfn "Valid transactions sum: %f" validTransactions
+printfn "Config: %A" config
+printfn "Average salary in IT department: %f" itDepartmentSalaries
+```

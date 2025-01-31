@@ -1,0 +1,243 @@
+---
+title: 제네릭 프로그래밍
+subtitle: Generic Programming
+description: |
+ F#의 제네릭 프로그래밍은 코드 재사용성과 타입 안전성을 높이며, 다양한 데이터 구조와 알고리즘을 일반화하는 데 유용하다. `swap` 같은 제네릭 함수, `Stack<'T>` 같은 제네릭 타입을 통해 여러 타입을 지원하는 유연한 구조를 만들 수 있다. 또한, 타입 제약 조건을 활용하면 특정 인터페이스나 연산을 지원하는 타입만 사용할 수 있도록 제한할 수 있다. 실제 응용 사례로는 금융 시스템의 트랜잭션 정렬, 데이터 변환 파이프라인, 도메인 주도 설계의 저장소 패턴 등이 있으며, 이를 통해 유지보수성과 확장성이 뛰어난 프로그램을 개발할 수 있다.
+categories:
+  - Generic Programming
+execute:
+  eval: false
+---
+
+### 1. 제네릭 프로그래밍 개념 소개 (Introduction to Generic Programming Concepts)
+
+* **제네릭 프로그래밍(Generic programming)** 은 타입 안전성이나 성능 저하 없이 여러 데이터 타입에서 작동할 수 있는 함수, 타입 및 데이터 구조를 만드는 패러다임입니다.
+* 핵심은 **특정 타입과 독립적인 알고리즘 및 데이터 구조**를 정의하여 코드 재사용을 촉진하고 타입별 구현의 함정을 피하는 것입니다.
+* F#에서 제네릭 프로그래밍은 **타입 매개변수(type parameters)** 를 사용하여 지원됩니다.
+* 타입 매개변수는 제네릭 함수 또는 타입이 인스턴스화될 때 지정될 실제 타입의 자리 표시자 역할을 합니다.
+
+```fsharp
+// 제네릭 함수 예제 (Example: Generic Functions)
+let swap (x, y) = (y, x) // 모든 타입의 튜플 요소 교환 가능
+
+// 제네릭 타입 정의 (Defining Generic Types)
+type Stack<'T> =
+    private
+    | Empty
+    | Node of 'T * Stack<'T>
+
+    member this.Push(value: 'T) =
+        Node(value, this)
+
+    member this.Pop() =
+        match this with
+        | Node(value, rest) -> (value, rest)
+        | Empty -> failwith "Stack is empty"
+
+    member this.IsEmpty =
+        match this with
+        | Empty -> true
+        | _ -> false
+
+// 제약 조건이 있는 제네릭 함수 (Generic Functions with Constraints)
+let compareEquality<'T when 'T : equality> (a: 'T) (b: 'T) =
+    a = b
+
+// 데이터 구조와 함께 제네릭 사용 (Using Generics with Data Structures)
+let reverseList<'T> (list: 'T list) =
+    List.fold (fun acc item -> item :: acc) [] list
+
+// 결과 출력
+let swapped = swap (1, "hello") // (string * int) 타입
+printfn "Swapped tuple: %A" swapped
+
+let stack = Stack.Empty.Push(1).Push(2)
+let (top, newStack) = stack.Pop()
+printfn "Top of stack: %d" top
+
+let isEqual = compareEquality 5 5
+printfn "Are the values equal? %b" isEqual
+
+let reversed = reverseList [1; 2; 3; 4]
+printfn "Reversed list: %A" reversed
+```
+
+### 2. 제네릭 타입 및 함수 정의 (Defining Generic Types and Functions)
+
+* F#에서 **제네릭 타입** 및 **함수**는 타입 매개변수를 사용하여 정의됩니다.
+* 제네릭 함수는 정의에 타입 매개변수를 지정하여 작성할 수 있으며, 이를 통해 함수 본체 전체에서 사용할 수 있습니다.
+* 마찬가지로 제네릭 타입은 모든 데이터 타입에서 작동하는 목록 또는 사전과 같이 정의할 수 있습니다.
+* `swap` 함수는 모든 타입 `a` 및 `b`에서 작동하여 값을 교환하고 스왑된 타입의 튜플을 반환하는 제네릭 함수의 예입니다.
+* `Container` 타입은 모든 타입의 값을 담을 수 있는 제네릭 타입의 예입니다.
+
+```fsharp
+// 제네릭 함수 정의 (Defining Generic Functions)
+let swap<'T> (x: 'T) (y: 'T) : 'T * 'T =
+    (y, x)
+
+// 제네릭 타입 정의 (Defining Generic Types)
+type Container<'T> =
+    private
+    | Empty
+    | Filled of 'T
+
+    member this.Value =
+        match this with
+        | Filled(value) -> Some value
+        | Empty -> None
+
+    member this.IsEmpty =
+        match this with
+        | Empty -> true
+        | _ -> false
+
+    static member Create(value: 'T) = Filled(value)
+
+// 결과 출력
+let swapped = swap 1 "hello"
+printfn "Swapped tuple: %A" swapped
+
+let container = Container.Create(10)
+printfn "Container value: %A" container.Value
+```
+
+### 3. F#의 제약 조건 및 타입 매개변수 (Constraints and Type Parameters in F#)
+
+* F#은 제네릭 타입 및 함수와 함께 사용할 수 있는 타입을 제한하기 위해 **제약 조건(constraints)** 을 지정할 수 있도록 합니다.
+* 제약 조건은 특정 인터페이스를 구현하거나 특정 메서드가 있는 타입 매개변수를 제한하는 데 유용합니다.
+* 제약 조건은 타입 매개변수가 특정 요구 사항이나 기능을 충족하도록 보장하는 데 유용합니다.
+* 예를 들어, 제약 조건은 타입 매개변수가 특정 인터페이스를 구현하거나 특정 메서드를 갖도록 적용할 수 있습니다.
+
+```fsharp
+// 멤버 제약 조건 (Member Constraints)
+let add<'T when 'T : (static member (+) : 'T * 'T -> 'T)> (x: 'T) (y: 'T) : 'T =
+    x + y
+
+// 상속 제약 조건 (Inheritance Constraints)
+type Animal() =
+    abstract member Speak: unit -> string
+
+type Dog() =
+    inherit Animal()
+    override this.Speak() = "Woof!"
+
+let speak<'T when 'T :> Animal> (animal: 'T) : string =
+    animal.Speak()
+
+// 기본 생성자 제약 조건 (Default Constructor Constraints)
+type Container<'T when 'T : (new : unit -> 'T)> () =
+    member this.CreateInstance() : 'T =
+        new 'T()
+
+// 제약 조건 결합 (Combining Constraints)
+type IPrintable =
+    abstract member Print: unit -> unit
+
+let printIfPrintable<'T when 'T :> IPrintable and 'T : (static member (+) : 'T * 'T -> 'T)> (x: 'T) =
+    x.Print()
+    printfn "Addition result: %A" (x + x)
+
+// 결과 출력
+let result = add 5 10 // 정수와 함께 작동
+let resultFloat = add 5.5 2.2 // 부동 소수점과 함께 작동
+printfn "Sum: %d" result
+printfn "Sum (float): %f" resultFloat
+
+let dog = Dog()
+let sound = speak dog
+printfn "%s" sound // 출력: "Woof!"
+
+type Example() =
+    member this.Print() = printfn "Example instance created."
+
+let container = Container<Example>()
+let instance = container.CreateInstance()
+instance.Print() // 출력: "Example instance created."
+```
+
+### 4. 실제 응용 프로그램에서 제네릭 사용 사례 연구 (Case Studies of Using Generics in Real-World Applications)
+
+* F#의 제네릭 프로그래밍은 다양한 실제 응용 프로그램에서 유연성과 유지 관리성을 향상시키는 데 사용됩니다.
+* **데이터 구조(Data Structures)**: `List<'T>`, `Dictionary<'Key, 'Value>` 및 `Queue<'T>`와 같은 제네릭 데이터 구조는 다양한 데이터 타입을 효율적으로 처리하는 데 일반적으로 사용됩니다.
+* **알고리즘(Algorithms)**: 정렬 또는 검색과 같은 제네릭 알고리즘은 각 타입에 대한 별도의 구현 없이 다양한 타입에 적용할 수 있습니다.
+* **라이브러리 설계(Library Design)**: 많은 F# 라이브러리는 제네릭을 활용하여 유연하고 재사용 가능한 구성 요소를 제공합니다. 예를 들어, 함수형 프로그래밍, 데이터 처리 또는 직렬화를 위한 라이브러리는 종종 제네릭을 사용하여 타입 안전하고 적응 가능한 기능을 제공합니다.
+* 제네릭을 통해 개발자는 다양한 컨텍스트에서 재사용할 수 있는 다재다능하고 타입 안전한 코드를 만들어 코드 품질을 개선하고 중복을 줄일 수 있습니다.
+
+```fsharp
+// 비즈니스 애플리케이션의 제네릭 데이터 구조 (Generic Data Structures for Business Applications)
+type Asset<'T>(id: string, name: string, details: 'T) =
+    member this.Id = id
+    member this.Name = name
+    member this.Details = details
+
+// 차량 자산 예제 (Example of a vehicle asset)
+type VehicleDetails = { Make: string; Model: string; Year: int }
+let vehicle = Asset<VehicleDetails>("V001", "Truck", { Make = "Ford"; Model = "F-150"; Year = 2020 })
+
+// 건물 자산 예제 (Example of a building asset)
+type BuildingDetails = { Address: string; Size: float; Floors: int }
+let building = Asset<BuildingDetails>("B001", "Office", { Address = "123 Main St"; Size = 25000.0; Floors = 5 })
+
+// 금융 시스템의 제네릭 알고리즘 (Generic Algorithms in Financial Systems)
+type Transaction<'T>(id: string, amount: decimal, details: 'T, date: System.DateTime) =
+    member this.Id = id
+    member this.Amount = amount
+    member this.Details = details
+    member this.Date = date
+
+// 제네릭 트랜잭션 정렬 예제 (Example of sorting generic transactions)
+let sortTransactionsByDate transactions =
+    transactions |> List.sortBy (fun t -> t.Date)
+
+// 샘플 데이터
+let transactions = [
+    Transaction("T001", 100.0M, "Stock Trade", System.DateTime(2024, 8, 1))
+    Transaction("T002", 200.0M, "Bank Deposit", System.DateTime(2024, 7, 15))
+    Transaction("T003", 150.0M, "Bank Withdrawal", System.DateTime(2024, 7, 20))
+]
+
+let sortedTransactions = sortTransactionsByDate transactions
+
+// 데이터 처리의 제네릭 파이프라인 (Generic Pipelines in Data Processing)
+let processData<'T, 'U> (input: 'T) (transform: 'T -> 'U) : 'U =
+    transform input
+
+// CSV 라인을 레코드로 구문 분석하는 예제 (Example: Processing a CSV line into a record)
+type Person = { Name: string; Age: int }
+
+let parseCsvLine (line: string) : Person =
+    let parts = line.Split(',')
+    { Name = parts.[0]; Age = int parts.[1] }
+
+// 제네릭 processData 함수 사용 예제 (Example: Using the generic processData function)
+let csvLine = "John Doe,30"
+let person = processData csvLine parseCsvLine
+
+// 도메인 주도 설계의 제네릭 (Generics in Domain-Driven Design)
+type IRepository<'T> =
+    abstract member Add : 'T -> unit
+    abstract member Get : id: string -> 'T option
+
+type InMemoryRepository<'T>() =
+    let store = System.Collections.Generic.Dictionary<string, 'T>()
+
+    interface IRepository<'T> with
+        member this.Add(item: 'T) =
+            let id = System.Guid.NewGuid().ToString()
+            store.Add(id, item)
+
+        member this.Get(id: string) =
+            if store.ContainsKey(id) then Some store.[id] else None
+
+// Person 엔티티에 대한 저장소 사용 예제 (Example: Using the repository for a Person entity)
+let repository = InMemoryRepository<Person>()
+(repository :> IRepository<Person>).Add({ Name = "Alice"; Age = 28 })
+let retrievedPerson = (repository :> IRepository<Person>).Get("some-id")
+
+// 결과 출력
+printfn "Vehicle Asset: %A" vehicle
+printfn "Building Asset: %A" building
+printfn "Sorted Transactions: %A" sortedTransactions
+printfn "Parsed Person: %A" person
+printfn "Retrieved Person: %A" retrievedPerson
+```

@@ -2,12 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.6.40">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="프로그래밍 언어 선택은 프로젝트의 성패에 영향을 미치지만, 학습이나 트렌드를 따라가기 위해 선택하는 경우도 많습니다. 함수형 언어는 과거 연구용으로 여겨졌지만, 데이터 처리와 정확성이 중요한 분야에서 관심이 증가하며 실용적으로 활용되고 있습니다. 이러한 흐름 속에서 함수형 프로그래밍 개념을 익히기 위해 .NET 환경과 원활히 통합되는 F#을 배우려 합니다. F#은 간결하면서도 강력한 기능을 제공하며, 함수형 프로그래밍의 핵심 개념을 연습하기에 적합합니다. 또한, Microsoft 기술 스택과의 호환성이 뛰어나 실용적인 선택이 될 수 있기를 기대합니다.">
 
-<title>함수형 언어 배워보기 – 혼자서 배워보는 FP</title>
+<title>F#을 배워보자 – F# with -sd-</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -30,17 +31,16 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
+<link href="./notes/fsharp_01.html" rel="next">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-fad5ab29a14bbe0a7a7d29177f3f13bb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -68,70 +68,18 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-date','listing-title','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="F#을 배워보자 – F# with -sd-">
+<meta property="og:description" content="프로그래밍 언어 선택은 프로젝트의 성패에 영향을 미치지만, 학습이나 트렌드를 따라가기 위해 선택하는 경우도 많습니다. 함수형 언어는 과거 연구용으로 여겨졌지만, 데이터 처리와 정확성이 중요한 분야에서 관심이 증가하며 실용적으로 활용되고 있습니다. 이러한 흐름 속에서 함수형 프로그래밍 개념을 익히기 위해 .NET 환경과 원활히 통합되는 F#을 배우려 합니다. F#은 간결하면서도 강력한 기능을 제공하며, 함수형 프로그래밍의 핵심 개념을 연습하기에 적합합니다. 또한, Microsoft 기술 스택과의 호환성이 뛰어나 실용적인 선택이 될 수 있기를 기대합니다.">
+<meta property="og:site_name" content="F# with -sd-">
+<meta name="twitter:title" content="F#을 배워보자 – F# with -sd-">
+<meta name="twitter:description" content="프로그래밍 언어 선택은 프로젝트의 성패에 영향을 미치지만, 학습이나 트렌드를 따라가기 위해 선택하는 경우도 많습니다. 함수형 언어는 과거 연구용으로 여겨졌지만, 데이터 처리와 정확성이 중요한 분야에서 관심이 증가하며 실용적으로 활용되고 있습니다. 이러한 흐름 속에서 함수형 프로그래밍 개념을 익히기 위해 .NET 환경과 원활히 통합되는 F#을 배우려 합니다. F#은 간결하면서도 강력한 기능을 제공하며, 함수형 프로그래밍의 핵심 개념을 연습하기에 적합합니다. 또한, Microsoft 기술 스택과의 호환성이 뛰어나 실용적인 선택이 될 수 있기를 기대합니다.">
+<meta name="twitter:card" content="summary">
 </head>
 
-<body class="nav-fixed">
+<body class="nav-sidebar floating nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -139,54 +87,160 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">혼자서 배워보는 FP</span>
+    <span class="navbar-title">F# with -sd-</span>
     </a>
   </div>
-            <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-  <span class="navbar-toggler-icon"></span>
-</button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav navbar-nav-scroll ms-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
-<span class="menu-text">About</span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/"> <i class="bi bi-github" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://twitter.com"> <i class="bi bi-twitter" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-</ul>
-          </div> <!-- /navcollapse -->
-            <div class="quarto-navbar-tools">
+        <div class="quarto-navbar-tools tools-end">
 </div>
+          <div id="quarto-search" class="" title="Search"></div>
       </div> <!-- /container-fluid -->
     </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">F#을 배워보자</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">F#을 배워보자</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">F# 기초</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./notes/fsharp_01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">F# 시작하기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./notes/fsharp_02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">조건식과 패턴 매칭</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./notes/fsharp_03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">컬렉션 및 데이터 구조</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./notes/fsharp_04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">루프, 반복 및 함수형 대안</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./notes/fsharp_05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">클래스, 열거형 및 객체 지향</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./notes/fsharp_06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">모듈, 접근자 및 코드 구성</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./notes/fsharp_07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">선언적 프로그래밍</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./notes/fsharp_08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">명령형 프로그래밍 및 상태 관리</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./notes/fsharp_09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">제네릭 프로그래밍</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./notes/fsharp_10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">객체 지향 프로그래밍</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./notes/fsharp_11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">함수형 프로그래밍</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./notes/fsharp_12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">데이터 흐름 프로그래밍</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./notes/fsharp_13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">비동기 프로그래밍</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./notes/fsharp_14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">동시성 프로그래밍</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
         
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(4)</span></div><div class="category" data-category=".NET">.NET <span class="quarto-category-count">(4)</span></div><div class="category" data-category="F#">F# <span class="quarto-category-count">(4)</span></div></div></div>
+    </div>
 <!-- main -->
-<main class="content column-page-left" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">함수형 언어 배워보기</h1>
+<h1 class="title">F#을 배워보자</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">F#</div>
+    <div class="quarto-category">.NET</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    <p>프로그래밍 언어 선택은 프로젝트의 성패에 영향을 미치지만, 학습이나 트렌드를 따라가기 위해 선택하는 경우도 많습니다. 함수형 언어는 과거 연구용으로 여겨졌지만, 데이터 처리와 정확성이 중요한 분야에서 관심이 증가하며 실용적으로 활용되고 있습니다. 이러한 흐름 속에서 함수형 프로그래밍 개념을 익히기 위해 <code>.NET</code> 환경과 원활히 통합되는 <code>F#</code>을 배우려 합니다. F#은 간결하면서도 강력한 기능을 제공하며, 함수형 프로그래밍의 핵심 개념을 연습하기에 적합합니다. 또한, Microsoft 기술 스택과의 호환성이 뛰어나 실용적인 선택이 될 수 있기를 기대합니다.</p>
+  </div>
 </div>
 
 
-
-<div class="quarto-title-meta column-page-left">
+<div class="quarto-title-meta">
 
     
   
@@ -198,97 +252,13 @@ window.Quarto = {
 </header>
 
 
+<p>개발자가 특정 언어를 선택하는 것은 프로젝트의 성패에 영향을 미치곤 합니다. 그러나 학습이나 재미를 위해서 혹은 효율이나 생산성과 전혀 관련없지만 ’힙(hip)’한 어떤 것을 선택할 때가 있습니다. 불과 얼마전까지만 해도 학자들의 언어, 혹은 대학원생의 언어로 불렸던 <code>Haskell</code>, <code>Prolog</code> 같은 언어들이 <a href="https://cardano.org/">블럭체인</a>이나 <a href="https://arxiv.org/pdf/1805.10872">머신러닝</a> 등에 활용되고 있다는 것이 대표적인 예 입니다. 효율적인 데이터 처리와 정확한 계산에 대한 수요가 증가함에 따라 비효율적인 언어의 대명사처럼 알려진 함수형 언어에 대한 관심이 높아졌습니다. 함수형 언어는 가파른 학습 곡선으로 인해서 연구용 언어로 취급되었지만 지금은 많은 개발자들이 “효율”과 “안전”을 위해서 선택하기도 합니다. 함수형과 객체지향 프로그래밍 패러다임이 결합되어 나름의 장점을 뽐내는 방법을 고민하고 있습니다. 이를 통해 단순성, 효율성 그리고 안정성을 추구하기도 합니다.</p>
+<p>새로운 프로그래밍 기법을 연습하기 위해서 <code>.NET</code> 플랫폼의 함수형 언어인 <code>F#</code>을 가볍게 배워볼 생각입니다. F#은 복잡한 작업을 간결하고 효과적으로 처리할 수 있을 뿐만 아니라, 개발 관련된 환경이 잘 구성되어 있습니다. F#을 활용해서 불변성, 일급 함수 등 함수형 언어가 제시하는 다양한 개념을 연습할 수 있도록 구성하였습니다. 이러한 연습 혹은 수련을 통해서 함수형 언어를 조금 쉽게 접근할 수 있기를 희망합니다.</p>
+<p>F#을 선택한 이유는 .NET 환경과 원활한 통합입니다. .NET 플랫폼의 일부인 F#은 다양한 라이브러리 및 도구를 제공하기 때문에 Microsoft 기술 스택에 익숙한 개발자에게 완벽한 선택이 될 수 있습니다. F#은 함수형 프로그래밍에 관심이 있는 초급 개발자에서 기존의 중규모 서비스를 개선하기 위한 분들까지 배워볼만한 실용적인 언어라 할 수 있습니다. 혹은 그렇게 되길 희망합니다.</p>
 
 
 
-
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="F#,.NET" data-listing-date-sort="1730732400000" data-listing-file-modified-sort="1731346425684" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="397">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/fsharp_03/index.html" class="no-external">F# - 변수</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/fsharp_03/index.html" class="no-external"></a>
-</div>
-<div class="listing-description">
-<a href="./posts/fsharp_03/index.html" class="no-external">변수 정의는 모든 언어에서 가장 중요한 작업입니다. 문제를 해결하는데 토대를 마련하는 기본적인 도구입니다. F#은 변수는 값을 변하지 않습니다. F#에서 변수와 함수는 일반적으로 <code>let</code> 키워드를 사용하여 정의합니다. 불변이란 의미는 변수에 값이 할당된 후에는 값을 변경 할 수 없습니다.</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/fsharp_03/index.html" class="no-external">
-<div class="listing-date">
-Nov 5, 2024
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="1" data-categories="F#,.NET" data-listing-date-sort="1730732400000" data-listing-file-modified-sort="1731347087618" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="410">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/fsharp_04/index.html" class="no-external">4. F# - 타입</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/fsharp_04/index.html" class="no-external"></a>
-</div>
-<div class="listing-description">
-<a href="./posts/fsharp_04/index.html" class="no-external">타입 추론을 적극적으로 사용하세요. 복잡하거나, 의도를 명확하게 알려주고 싶다면, 타입을 명시적으로 작성하세요. 해당 타입에 대한 별도의 설명이나 사용 의도를 문서화하면 가독성과 유지 관리에 도움이 됩니다.</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/fsharp_04/index.html" class="no-external">
-<div class="listing-date">
-Nov 5, 2024
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="2" data-categories="F#,.NET" data-listing-date-sort="1730646000000" data-listing-file-modified-sort="1731346408403" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="169">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/fsharp_02/index.html" class="no-external">2. F# - 실행 환경</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/fsharp_02/index.html" class="no-external"></a>
-</div>
-<div class="listing-description">
-<a href="./posts/fsharp_02/index.html" class="no-external">F#을 학습하기 위해선 VS2022를 설치하는 것이 가장 좋은 방법입니다. VS2022는 디버거를 비롯해서 <code>.NET</code> 개발에 필요한 모든 도구를 지원하고 있습니다. 하지만, VS2022는 윈도우 사용자만 사용할 수 있기 때문에 당분간은 VSCode를 사용해서 해당 튜토리얼을 진행하고자 합니다. 그리고 <code>.NET</code> 등…</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/fsharp_02/index.html" class="no-external">
-<div class="listing-date">
-Nov 4, 2024
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="3" data-categories="F#,.NET" data-listing-date-sort="1730559600000" data-listing-file-modified-sort="1731346399589" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="206">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/fsharp_01/index.html" class="no-external">1. F# - 시작하기</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/fsharp_01/index.html" class="no-external"></a>
-</div>
-<div class="listing-description">
-<a href="./posts/fsharp_01/index.html" class="no-external">개발자가 특정 언어를 선택하는 것은 프로젝트의 성패에 영향을 미치곤 합니다. 그러나 학습이나 재미를 위해서 혹은 효율이나 생산성과 전혀 관련없지만 ’힙(hip)’한 어떤 것을 선택할 때가 있습니다. 불과 얼마전까지만 해도 학자들의 언어, 혹은 대학원생의 언어로 불렸던 <code>Haskell</code>, <code>Prolog</code> 같은 언어들이 …</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/fsharp_01/index.html" class="no-external">
-<div class="listing-date">
-Nov 3, 2024
-</div>
-</a>
-</div>
-</div>
-</div>
-<div class="listing-no-matching d-none">
-No matching items
-</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -371,8 +341,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -483,7 +451,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
@@ -709,6 +676,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./notes/fsharp_01.html" class="pagination-link" aria-label="F# 시작하기">
+        <span class="nav-page-text">F# 시작하기</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
 </div> <!-- /content -->
 
 
