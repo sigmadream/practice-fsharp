@@ -1,0 +1,285 @@
+---
+title: 선언적 프로그래밍
+subtitle: Declarative Programming
+description: |
+ F#에서 선언적 프로그래밍은 '어떻게'가 아니라 '무엇을' 해결할 것인지에 초점을 맞추며, `map`, `filter`, `fold` 같은 고차 함수를 활용해 간결하고 직관적인 코드를 작성할 수 있다. 불변성, 함수형 패러다임, 데이터 변환 파이프라인을 적극 활용하여 복잡성을 줄이고 유지보수성을 높인다. 이는 데이터 처리, UI 정의, 이벤트 기반 프로그래밍, 쿼리 시스템 등 다양한 실제 응용 사례에서 효과적으로 사용되며, 직관적이고 가독성이 뛰어난 코드를 작성하는 데 기여한다.
+categories:
+  - Declarative
+execute:
+  eval: false
+---
+
+### 1. 선언적 프로그래밍 소개 (Introduction to Declarative Programming)
+
+* **선언적 프로그래밍(declarative programming)** 은 **'어떻게(how)'** 보다는 **'무엇을(what)'** 에 중점을 두는 프로그래밍 패러다임입니다.
+* 단계별 명령을 제공하는 **명령형 프로그래밍(imperative programming)** 과 달리, 선언적 프로그래밍은 계산 로직을 표현하지만 제어 흐름을 명시적으로 정의하지는 않습니다.
+* F#은 **표현식(expressions)** 및 **고수준 추상화(higher-level abstractions)** 와 같은 구문을 통해 선언적 프로그래밍을 용이하게 합니다.
+* 이 패러다임은 F#의 함수형 프로그래밍 기능과 잘 맞으며, 개발자가 표현력이 뛰어나고 간결한 코드를 작성할 수 있도록 합니다.
+
+```fsharp
+// 명령형 프로그래밍 (Imperative Programming)
+let imperativeSum numbers =
+    let mutable sum = 0
+    for i in 0 .. numbers.Length - 1 do
+        sum <- sum + numbers.[i]
+    sum
+
+// 선언적 프로그래밍 (Declarative Programming)
+let declarativeSum numbers =
+    numbers |> Array.sum
+
+// 결과 출력
+let numbers = [|1; 2; 3; 4; 5|]
+printfn "Imperative Sum: %d" (imperativeSum numbers)
+printfn "Declarative Sum: %d" (declarativeSum numbers)
+```
+
+### 2. 데이터 처리를 위한 선언적 코드 작성 (Writing Declarative Code for Data Processing)
+
+* F#은 특히 데이터 처리 컨텍스트에서 선언적 프로그래밍을 지원하는 여러 기능을 제공합니다.
+* **불변 데이터 구조(immutable data structures)** 와 **고차 함수(higher-order functions)** 를 활용하여 단계별 조작 방식보다는 데이터 변환에 중점을 둔 코드를 작성할 수 있습니다.
+* `map`, `filter`, `fold`와 같은 F#의 컬렉션 처리 함수를 사용하면 데이터 컬렉션에 대한 변환 및 집계를 선언적으로 표현할 수 있습니다.
+* 이러한 함수를 통해 직관적이고 추론하기 쉬운 방식으로 연산을 변환 및 축소로 표현할 수 있습니다.
+
+```fsharp
+// 데이터 필터링 (Filtering Data)
+let numbers = [1; 2; 3; 4; 5; 6]
+let evenNumbers =
+    numbers
+    |> List.filter (fun n -> n % 2 = 0)
+
+// 데이터 매핑 (Mapping Data)
+let squaredNumbers =
+    numbers
+    |> List.map (fun n -> n * n)
+
+// 데이터 집계 (Aggregating Data)
+let sumOfSquares =
+    numbers
+    |> List.map (fun n -> n * n)
+    |> List.sum
+
+// 파이프 라인으로 연산 연결 (Chaining Operations with Pipelines)
+let result =
+    numbers
+    |> List.filter (fun n -> n % 2 = 0)  // 짝수 필터링
+    |> List.map (fun n -> n * n)         // 각 숫자 제곱
+    |> List.sum                         // 제곱된 값의 합계 계산
+
+// 지연 실행을 위한 시퀀스 사용 (Using Sequences for Deferred Execution)
+let squaredEvensLazy =
+    numbers
+    |> Seq.filter (fun x -> x % 2 = 0)
+    |> Seq.map (fun x -> x * x)
+    |> Seq.toList
+
+// 결과 출력
+printfn "Even numbers: %A" evenNumbers
+printfn "Squared numbers: %A" squaredNumbers
+printfn "Sum of squares: %d" sumOfSquares
+printfn "Sum of squares of even numbers: %d" result
+printfn "Squared even numbers (lazy): %A" squaredEvensLazy
+```
+
+### 3. 선언적 프로그래밍의 이점 및 사용 사례 (Benefits and Use Cases of Declarative Programming)
+
+* 선언적 프로그래밍은 **가독성 향상**과 **복잡성 감소**를 포함하여 여러 이점을 제공합니다.
+* 선언적 코드는 계산의 저수준 세부 사항을 추상화함으로써 개발자가 달성하려는 목표의 본질에 집중할 수 있도록 합니다.
+* 이러한 접근 방식은 특히 복잡한 데이터 처리 시나리오에서 더 **간단하고 유지 관리가 쉬운 코드**를 만듭니다.
+* 선언적 프로그래밍은 **데이터 변환, 쿼리 및 집계**와 관련된 시나리오에서 특히 효과적입니다.
+* 선언적 구문은 **불변성 및 고차 함수**와 같은 함수형 프로그래밍 관행과 잘 맞으며 간결하고 표현력이 뛰어난 코드를 만듭니다.
+
+```fsharp
+// 가독성 및 유지 관리성 향상 (Increased Readability and Maintainability)
+// 거래 요약 예제 (Example: Summarizing Transactions)
+// 명령형 스타일 (Imperative Style)
+let mutable total = 0.0
+for transaction in transactions do
+    if transaction.Status = "approved" then
+        total <- total + transaction.Amount
+
+// 선언적 스타일 (Declarative Style)
+let totalApproved =
+    transactions
+    |> List.filter (fun t -> t.Status = "approved")
+    |> List.sumBy (fun t -> t.Amount)
+
+// 복잡성 감소 (Reduced Complexity)
+// 데이터 변환 파이프라인 예제 (Example: Data Transformation Pipeline)
+// 선언적 스타일 (Declarative Style)
+let processedData =
+    data
+    |> List.filter (fun x -> x.IsValid)
+    |> List.map transform
+    |> List.fold (fun acc x -> acc + x.Value) 0
+
+// 불변성 및 함수 순수성 (Immutability and Functional Purity)
+// 결과 계산 예제 (Example: Computing Results)
+// 순수 함수 (Pure Function)
+let computeResult x y = x * y + y
+
+// 재사용성 향상 (Enhanced Reusability)
+// 재사용 가능한 변환 함수 예제 (Example: Reusable Transformation Functions)
+let addOne x = x + 1
+let double x = x * 2
+let transformData =
+    data
+    |> List.map addOne
+    |> List.map double
+
+// 병렬 처리 개선 (Improved Parallelism)
+// 병렬 데이터 처리 예제 (Example: Parallel Data Processing)
+let parallelResult =
+    data
+    |> List.Parallel.map (fun x -> process x)
+    |> List.sum
+
+// 선언적 프로그래밍 사용 사례 (Use Cases for Declarative Programming)
+// 데이터 처리 및 변환 (Data Processing and Transformation)
+// 센서 데이터 분석 예제 (Example: Analyzing Sensor Data)
+let averageTemperature =
+    sensorData
+    |> List.filter (fun reading -> reading.TimeOfDay = "morning")
+    |> List.map (fun reading -> reading.Temperature)
+    |> List.average
+
+// 구성 및 DSL (Configuration and DSLs)
+// 구성 파일 예제 (Example: Configuration Files)
+let config =
+    [ "server" => "localhost"
+      "port" => 8080
+      "database" => "mydb" ]
+    |> Map.ofList
+
+// 선언적 UI 개발 (Declarative UI Development)
+// UI 정의 예제 (Example: UI Definition)
+let myForm =
+    Form.create [
+        Label.create "Name:"
+        TextBox.create ()
+        Button.create "Submit"
+    ]
+
+// 선언적 쿼리 언어 (Declarative Query Languages)
+// SQL 쿼리 예제 (Example: SQL Query)
+// SELECT name, age
+// FROM users
+// WHERE age > 18
+// ORDER BY age
+
+// 결과 출력 (예시)
+printfn "Total approved transactions: %f" totalApproved
+printfn "Processed data: %d" processedData
+printfn "Average temperature: %f" averageTemperature
+printfn "Config: %A" config
+```
+
+### 4. F#의 선언적 패턴 실제 사례 (Real-World Examples of Declarative Patterns in F#)
+
+* F#의 선언적 패턴은 다양한 영역에서 실용적으로 활용되어 데이터 처리 작업을 단순화하고 효율화합니다.
+* F#의 LINQ와 유사한 쿼리를 사용하여 컬렉션을 조작하면 복잡한 데이터 검색 및 조작 연산을 표현하는 선언적 방법이 제공됩니다.
+* FSharp.Data와 같은 라이브러리를 사용한 선언적 데이터 변환은 JSON, XML, CSV 파일과 같은 다양한 소스의 구조화된 데이터로 작업하기 위한 고수준의 선언적 인터페이스를 제공합니다.
+* 선언적 패턴은 이벤트 처리 및 응답을 선언적으로 정의하여 이벤트 중심 시스템을 더 쉽고 확장 가능하게 관리하는 데에도 사용됩니다.
+
+```fsharp
+// 데이터 처리 파이프라인 (Data Processing Pipeline)
+// 고가치 고객의 총 수익 계산 예제 (Example: Calculating Total Revenue for High-Value Customers)
+type Transaction = {
+    CustomerId: int
+    Amount: float
+    IsHighValue: bool
+}
+
+let transactions: Transaction list = [
+    { CustomerId = 1; Amount = 200.0; IsHighValue = true }
+    { CustomerId = 2; Amount = 150.0; IsHighValue = false }
+    { CustomerId = 1; Amount = 300.0; IsHighValue = true }
+    { CustomerId = 3; Amount = 250.0; IsHighValue = true }
+]
+
+let totalRevenueHighValueCustomers =
+    transactions
+    |> List.filter (fun t -> t.IsHighValue)
+    |> List.sumBy (fun t -> t.Amount)
+
+// 구성 관리 (Configuration Management)
+// 애플리케이션 구성 예제 (Example: Managing Application Configuration)
+open System.Collections.Generic
+
+let loadConfig () =
+    let config = new Dictionary<string, string>()
+    config.Add("DatabaseHost", "localhost")
+    config.Add("DatabasePort", "5432")
+    config.Add("MaxConnections", "100")
+    config
+
+let getConfigValue key =
+    let config = loadConfig ()
+    match config.TryGetValue key with
+    | true, value -> value
+    | _ -> "Not found"
+
+// 선언적 UI 정의 (Declarative UI Definition)
+// 간단한 UI 정의 예제 (Example: Defining a Simple UI)
+open System
+open System.Windows.Forms
+
+let createForm () =
+    let form = new Form(Text = "Sample Form", Width = 300, Height = 200)
+    let label = new Label(Text = "Hello, World!", Top = 50, Left = 100)
+    form.Controls.Add(label)
+    let button = new Button(Text = "Click Me", Top = 100, Left = 100)
+    button.Click.Add(fun _ -> MessageBox.Show("Button clicked!"))
+    form.Controls.Add(button)
+    form
+
+[<EntryPoint>]
+let main argv =
+    Application.Run(createForm())
+    0
+
+// F#을 사용한 선언적 쿼리 (Declarative Querying with F#)
+// 직원 목록 쿼리 예제 (Example: Querying a List of Employees)
+type Employee = {
+    Id: int
+    Name: string
+    Department: string
+    Salary: float
+}
+
+let employees: Employee list = [
+    { Id = 1; Name = "Alice"; Department = "HR"; Salary = 50000.0 }
+    { Id = 2; Name = "Bob"; Department = "IT"; Salary = 60000.0 }
+    { Id = 3; Name = "Carol"; Department = "IT"; Salary = 70000.0 }
+    { Id = 4; Name = "Dave"; Department = "Marketing"; Salary = 55000.0 }
+]
+
+let itDepartmentSalaries =
+    employees
+    |> List.filter (fun e -> e.Department = "IT")
+    |> List.map (fun e -> e.Salary)
+    |> List.average
+
+// 이벤트 기반 프로그래밍 (Event-Driven Programming)
+// GUI 애플리케이션의 이벤트 처리 예제 (Example: Handling Events in a GUI Application)
+open System
+open System.Windows.Forms
+
+let createForm () =
+    let form = new Form(Text = "Event-Driven Form", Width = 300, Height = 200)
+    let button = new Button(Text = "Click Me", Top = 100, Left = 100)
+    button.Click.Add(fun _ -> MessageBox.Show("Button clicked!"))
+    form.Controls.Add(button)
+    form
+
+[<EntryPoint>]
+let main argv =
+    Application.Run(createForm())
+    0
+
+// 결과 출력
+printfn "Total revenue from high-value customers: %f" totalRevenueHighValueCustomers
+printfn "Database Host: %s" (getConfigValue "DatabaseHost")
+printfn "Database Port: %s" (getConfigValue "DatabasePort")
+printfn "Average salary in IT department: %f" itDepartmentSalaries
+```

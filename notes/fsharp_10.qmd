@@ -1,0 +1,379 @@
+---
+title: 객체 지향 프로그래밍
+subtitle: Object-Oriented Programming
+description: |
+ F#에서 객체 지향 프로그래밍(OOP)은 클래스, 인터페이스, 상속 및 다형성을 지원하며, 함수형 프로그래밍과 조화롭게 결합된다. 클래스를 사용하여 엔티티를 모델링하고, 인터페이스를 통해 다형성을 구현하며, 추상 클래스를 활용하여 공통 기능을 정의할 수 있다. 또한, 종속성 주입을 사용하여 유연성과 테스트 용이성을 높일 수 있으며, 이벤트 기반 아키텍처와 디자인 패턴도 적용 가능하다. OOP와 함수형 프로그래밍을 함께 사용하면 유지보수성과 확장성이 뛰어난 애플리케이션을 설계할 수 있다.
+categories:
+  - OOP
+execute:
+  eval: false
+---
+
+이 모듈에서는 F#에서 사용 가능한 객체 지향 프로그래밍(OOP) 구문과 함수형 프로그래밍 원칙을 결합하는 방법을 살펴봅니다. F# 환경 내에서 클래스, 인터페이스 및 기타 OOP 개념을 설계하고 구현하는 방법에 대한 심층적인 이해를 제공합니다.
+
+### 1. F#의 객체 지향 프로그래밍 구문 (Object-Oriented Programming Constructs in F#)
+
+* F#은 함수형 프로그래밍 기능으로 주로 알려져 있지만, 강력한 객체 지향 프로그래밍도 지원합니다.
+* 이러한 이중 패러다임 접근 방식을 통해 개발자는 함수형 및 객체 지향 스타일의 장점을 모두 활용할 수 있습니다.
+* F#의 OOP 구문은 **캡슐화(encapsulation)**, **상속(inheritance)**, **다형성(polymorphism)** 을 지원하도록 설계되었으며, F#의 함수형 기능과 원활하게 작동합니다.
+* F#의 주요 OOP 구문에는 **클래스(classes)**, **인터페이스(interfaces)**, **상속(inheritance)** 이 포함되며, 이를 통해 실제 엔티티와 관계를 모델링할 수 있습니다.
+
+```fsharp
+// F#의 클래스 (Classes in F#)
+type Person(name: string, age: int) =
+    member this.Name = name
+    member this.Age = age
+    member this.Greet() = printfn "Hello, my name is %s and I am %d years old." this.Name this.Age
+
+// F#의 인터페이스 (Interfaces in F#)
+type IGreeter =
+    abstract member Greet: unit -> unit
+
+type Person(name: string) =
+    member this.Name = name
+    interface IGreeter with
+        member this.Greet() = printfn "Hello, my name is %s." this.Name
+
+// 결과 출력
+let person = Person("Alice", 30)
+person.Greet()
+
+let greeter = Person("Bob") :> IGreeter
+greeter.Greet()
+```
+
+### 2. F#에서 클래스 및 인터페이스 설계 (Designing Classes and Interfaces in F#)
+
+* F#의 **클래스(classes)** 는 `type` 키워드를 사용하여 정의되며, 캡슐화 및 상속과 같은 객체 지향 기능을 지원합니다.
+* 클래스는 필드, 속성, 메서드 및 생성자를 가질 수 있으며, 접근 한정자를 사용하여 가시성과 캡슐화를 제어할 수 있습니다.
+* **인터페이스(interfaces)** 는 `interface` 키워드를 사용하여 유사하게 정의되며, 클래스가 구현할 수 있는 계약을 정의합니다.
+* 인터페이스는 다형성을 가능하게 하여 서로 다른 클래스가 동일한 메서드 집합에 대한 구현을 제공하도록 합니다.
+
+```fsharp
+// F#에서 클래스 설계 (Designing Classes for Effective Use in F#)
+type Point(x: int, y: int) =
+    member this.X = x
+    member this.Y = y
+    member this.MoveBy(dx: int, dy: int) =
+        Point(x + dx, y + dy)
+
+type Counter() =
+    let mutable count = 0
+    member this.Increment() =
+        count <- count + 1
+    member this.GetCount() = count
+
+// 유연성과 분리를 위한 인터페이스 (Interfaces for Flexibility and Decoupling)
+type IShape =
+    abstract member Area: unit -> float
+    abstract member Perimeter: unit -> float
+
+type Circle(radius: float) =
+    interface IShape with
+        member this.Area() = System.Math.PI * radius * radius
+        member this.Perimeter() = 2.0 * System.Math.PI * radius
+
+type Rectangle(width: float, height: float) =
+    interface IShape with
+        member this.Area() = width * height
+        member this.Perimeter() = 2.0 * (width + height)
+
+// 인터페이스 및 종속성 주입 (Interfaces and Dependency Injection)
+type ILogger =
+    abstract member Log: string -> unit
+
+type ConsoleLogger() =
+    interface ILogger with
+        member this.Log(message: string) =
+            printfn "Log: %s" message
+
+type Application(logger: ILogger) =
+    member this.Run() =
+        logger.Log("Application started")
+
+// F#의 추상 클래스 (Abstract Classes in F#)
+[<AbstractClass>]
+type Shape() =
+    abstract member Area: unit -> float
+    abstract member Perimeter: unit -> float
+    member this.Description() =
+        sprintf "Area: %f, Perimeter: %f" (this.Area()) (this.Perimeter())
+
+type Square(side: float) =
+    inherit Shape()
+    override this.Area() = side * side
+    override this.Perimeter() = 4.0 * side
+
+// 함수형 및 객체 지향 설계 결합 (Combining Functional and Object-Oriented Design)
+type IProcessor =
+    abstract member Process: int -> int
+
+type Doubler() =
+    interface IProcessor with
+        member this.Process(x: int) = x * 2
+
+let applyProcessing processor data =
+    data |> List.map processor.Process
+
+// 결과 출력
+let point1 = Point(3, 4)
+let point2 = point1.MoveBy(2, 3)
+printfn "Point1: (%d, %d)" point1.X point1.Y
+printfn "Point2: (%d, %d)" point2.X point2.Y
+
+let counter = Counter()
+counter.Increment()
+counter.Increment()
+printfn "Counter: %d" (counter.GetCount())
+
+let shapes: IShape list = [
+    Circle(5.0) :> IShape
+    Rectangle(4.0, 6.0) :> IShape
+]
+
+for shape in shapes do
+    printfn "Area: %f, Perimeter: %f" (shape.Area()) (shape.Perimeter())
+
+let logger = ConsoleLogger() :> ILogger
+let app = Application(logger)
+app.Run()
+
+let square = Square(4.0)
+printfn "%s" (square.Description())
+
+let processor = Doubler() :> IProcessor
+let data = [1; 2; 3; 4]
+let result = applyProcessing processor data
+printfn "%A" result
+```
+
+### 3. OOP와 함수형 프로그래밍 결합 모범 사례 (Best Practices for Combining OOP with Functional Programming)
+
+* F#에서 OOP와 함수형 프로그래밍을 결합하려면 두 패러다임의 장점을 활용하는 균형 잡힌 접근 방식이 필요합니다.
+* **캡슐화와 불변성**: OOP는 클래스를 통해 캡슐화 및 상태 관리를 강조하는 반면, 함수형 프로그래밍은 불변성을 선호합니다. 이러한 패러다임을 결합할 때는 함수형 원칙에 맞게 클래스 내에서 불변 데이터 구조를 사용하는 것이 좋습니다.
+* **OOP 클래스 내의 함수형 메서드**: 순수 함수를 사용하고 가능한 경우 부작용을 피함으로써 OOP 클래스 내에서 함수형 프로그래밍 개념을 구현합니다.
+* **인터페이스 및 타입 클래스**: 인터페이스를 사용하여 계약을 정의하고 타입 클래스를 사용하여 기능을 확장합니다. 이를 통해 다형성 및 코드 재사용을 허용하면서 함수형 프로그래밍 원칙을 준수할 수 있습니다.
+* 두 패러다임을 신중하게 통합하면 함수형 프로그래밍의 장점을 유지하면서 OOP 구문을 활용하는 견고하고 유지 관리 가능하며 유연한 코드베이스를 만들 수 있습니다.
+
+```fsharp
+// 작업에 적합한 패러다임 선택 (Choosing the Right Paradigm for the Task)
+// 데이터 처리를 위한 FP (FP for Data Processing)
+let processNumbers numbers =
+    numbers
+    |> List.map (fun n -> n * 2)
+    |> List.filter (fun n -> n % 3 = 0)
+
+// 엔티티 모델링을 위한 OOP (OOP for Entity Modeling)
+type Player(name: string, mutable health: int) =
+    member val Name = name with get, set
+    member val Health = health with get, set
+    member this.TakeDamage(damage: int) =
+        this.Health <- this.Health - damage
+
+// 기본값으로 불변성 (Immutability as a Default)
+type Point(x: int, y: int) =
+    member this.X = x
+    member this.Y = y
+    member this.MoveBy(dx: int, dy: int) =
+        Point(x + dx, y + dy)
+
+// 상속보다 구성 선호 (Favor Composition over Inheritance)
+type IShape =
+    abstract member Area: unit -> float
+
+type Circle(radius: float) =
+    interface IShape with
+        member this.Area() = System.Math.PI * radius * radius
+
+type Rectangle(width: float, height: float) =
+    interface IShape with
+        member this.Area() = width * height
+
+let calculateTotalArea (shapes: IShape list) =
+    shapes |> List.sumBy (fun shape -> shape.Area())
+
+// OOP에서 함수형 구문 사용 (Using Functional Constructs for Control Flow in OOP)
+type Shape =
+    | Circle of radius: float
+    | Rectangle of width: float * height: float
+
+    member this.Area =
+        match this with
+        | Circle radius -> System.Math.PI * radius * radius
+        | Rectangle (width, height) -> width * height
+
+// 함수형 구문을 사용한 종속성 주입 구현 (Implementing Dependency Injection Using Functional Constructs)
+type ILogger =
+    abstract member Log: string -> unit
+
+type ConsoleLogger() =
+    interface ILogger with
+        member this.Log(message: string) =
+            printfn "Log: %s" message
+
+type Application(logger: ILogger) =
+    member this.Run() =
+        logger.Log("Application started")
+
+// 타입 안전성 및 도메인 모델링 수용 (Embracing Type Safety and Domain Modeling)
+type PaymentMethod =
+    | CreditCard of cardNumber: string
+    | PayPal of email: string
+    | Cash
+
+let processPayment payment =
+    match payment with
+    | CreditCard number -> printfn "Processing credit card %s" number
+    | PayPal email -> printfn "Processing PayPal payment for %s" email
+    | Cash -> printfn "Processing cash payment"
+
+// 결과 출력
+let result = processNumbers [1; 2; 3; 4; 5; 6]
+printfn "%A" result
+
+let player = Player("Hero", 100)
+player.TakeDamage(25)
+printfn "%s has %d health" player.Name player.Health
+
+let point1 = Point(10, 20)
+let point2 = point1.MoveBy(5, 10)
+printfn "Point1: (%d, %d)" point1.X point1.Y
+printfn "Point2: (%d, %d)" point2.X point2.Y
+
+let shapes: IShape list = [Circle(3.0) :> IShape; Rectangle(4.0, 5.0) :> IShape]
+let totalArea = calculateTotalArea shapes
+printfn "Total Area: %f" totalArea
+
+let circle = Circle 3.0
+let rectangle = Rectangle(4.0, 5.0)
+printfn "Circle Area: %f" (circle :> IShape).Area
+printfn "Rectangle Area: %f" (rectangle :> IShape).Area
+
+let logger = ConsoleLogger() :> ILogger
+let app = Application(logger)
+app.Run()
+
+let payment = CreditCard "1234-5678-9012-3456"
+processPayment payment
+```
+
+### 4. F#에서 OOP의 실제 응용 프로그램 및 패턴 (Real-World Applications and Patterns for OOP in F#)
+
+* F#에서 OOP의 실제 응용 프로그램에는 **엔터프라이즈 응용 프로그램, GUI 개발** 및 **디자인 패턴** 구현이 포함됩니다.
+* **엔터프라이즈 응용 프로그램**: OOP는 엔티티와 그 상호 작용을 모델링해야 하는 복잡한 엔터프라이즈 시스템을 구조화하는 데 유용합니다.
+* **GUI 개발**: 객체 지향 원칙은 인터페이스의 여러 구성 요소가 자체 상태와 동작을 가진 객체로 표현될 수 있는 GUI 개발에 자주 사용됩니다.
+* **디자인 패턴**: F#은 팩토리 패턴, 싱글톤 패턴, 옵저버 패턴과 같은 다양한 디자인 패턴을 지원합니다. 이러한 패턴을 F#에서 구현하면 확장 가능하고 유지 관리가 쉬운 시스템을 만드는 데 도움이 될 수 있습니다.
+* OOP 구문을 효과적으로 이해하고 적용하면 F#에서 복잡한 시스템을 설계하고 구현하는 능력이 향상됩니다.
+
+```fsharp
+// 비즈니스 엔티티 및 도메인 로직 모델링 (Modeling Business Entities and Domain Logic)
+type Product(name: string, price: decimal) =
+    member val Name = name with get, set
+    member val Price = price with get, set
+
+    member this.ApplyDiscount(discount: decimal) =
+        if discount < 0m || discount > 1m then
+            invalidArg "discount" "Discount must be between 0 and 1"
+        else
+            this.Price <- this.Price * (1m - discount)
+
+// 상태 및 동작 캡슐화를 위한 패턴 (Patterns for State and Behavior Encapsulation)
+type BankAccount(accountNumber: string, balance: decimal) =
+    let mutable currentBalance = balance
+    member this.AccountNumber = accountNumber
+
+    member this.Deposit(amount: decimal) =
+        if amount <= 0m then
+            invalidArg "amount" "Deposit amount must be positive"
+        else
+            currentBalance <- currentBalance + amount
+
+    member this.Withdraw(amount: decimal) =
+        if amount > currentBalance then
+            invalidOp "Insufficient funds"
+        else
+            currentBalance <- currentBalance - amount
+
+    member this.Balance = currentBalance
+
+// 함수형 기술과 OOP 결합 (Combining OOP with Functional Techniques)
+type ShoppingCartItem(product: Product, quantity: int) =
+    member val Product = product with get, set
+    member val Quantity = quantity with get, set
+
+    member this.TotalPrice =
+        this.Product.Price * decimal this.Quantity
+
+type ShoppingCart() =
+    let mutable items = []
+    member this.AddItem(item: ShoppingCartItem) =
+        items <- item :: items
+
+    member this.TotalCost() =
+        items |> List.sumBy (fun item -> item.TotalPrice)
+
+// 이벤트 기반 아키텍처의 OOP (OOP in Event-Driven Architectures)
+type ISubscriber =
+    abstract member ProcessEvent: string -> unit
+
+type MessageSubscriber(name: string) =
+    interface ISubscriber with
+        member this.ProcessEvent(eventMessage: string) =
+            printfn "%s received event: %s" name eventMessage
+
+// 종속성 주입 및 제어 반전을 위한 패턴 (Patterns for Dependency Injection and Inversion of Control)
+type ILogger =
+    abstract member Log: string -> unit
+
+type ConsoleLogger() =
+    interface ILogger with
+        member this.Log(message: string) =
+            printfn "Log: %s" message
+
+type OrderService(logger: ILogger) =
+    member this.PlaceOrder(orderId: string) =
+        logger.Log(sprintf "Order %s placed" orderId)
+
+// F#에서 OOP를 사용한 디자인 패턴 적용 (Applying Design Patterns in OOP with F#)
+type IDiscountStrategy =
+    abstract member ApplyDiscount: decimal -> decimal
+
+type NoDiscount() =
+    interface IDiscountStrategy with
+        member this.ApplyDiscount(price: decimal) = price
+
+type PercentageDiscount(rate: decimal) =
+    interface IDiscountStrategy with
+        member this.ApplyDiscount(price: decimal) = price * (1m - rate)
+
+let calculateFinalPrice (strategy: IDiscountStrategy) (price: decimal) =
+    strategy.ApplyDiscount(price)
+
+// 결과 출력
+let product = Product("Laptop", 1200m)
+product.ApplyDiscount(0.1m)
+printfn "%s new price is: %f" product.Name product.Price
+
+let account = BankAccount("12345", 500m)
+account.Deposit(200m)
+printfn "New balance: %f" account.Balance
+
+let product1 = Product("Tablet", 300m)
+let cart = ShoppingCart()
+cart.AddItem(ShoppingCartItem(product1, 2))
+printfn "Total cost: %f" (cart.TotalCost())
+
+let subscriber1 = MessageSubscriber("Subscriber1")
+let subscriber2 = MessageSubscriber("Subscriber2")
+(subscriber1 :> ISubscriber).ProcessEvent("New Message")
+(subscriber2 :> ISubscriber).ProcessEvent("Another Message")
+
+let logger = ConsoleLogger() :> ILogger
+let orderService = OrderService(logger)
+orderService.PlaceOrder("ORD123")
+
+let price = 100m
+let discountStrategy = PercentageDiscount(0.1m) :> IDiscountStrategy
+let finalPrice = calculateFinalPrice discountStrategy price
+printfn "Final Price: %f" finalPrice
+```

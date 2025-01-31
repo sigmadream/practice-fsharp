@@ -1,5 +1,5 @@
 project:
-  type: website
+  type: website  
   output-dir: docs
   render:
     - "*.qmd"
@@ -11,26 +11,34 @@ project:
     browser: false    
 
 website:
-  title: "F#"
-  description: "Learn F# with MVP!"
+  title: "F# with -sd-"
+  description: "Let's learn F# together!"
   twitter-card: true
   open-graph: true
-  page-navigation: true
-  repo-branch: main
-  repo-url: https://github.com/sigmadream/practice-fsharp
-  repo-actions: [issue]  
-  back-to-top-navigation: true
-  page-footer: "Copyright 2024, Sangkon Han" 
+  page-navigation: true  
   navbar:
+    background: primary
     search: true
-    right:      
-      - icon: github
-        href: https://github.com/sigmadream/practice-fsharp
   sidebar:
     style: "floating"
-
-metadata-files:
-  - sidebar.yml
+    contents:
+      - index.qmd
+      - section: "F# 기초"
+        contents:
+          - notes/fsharp_01.qmd
+          - notes/fsharp_02.qmd
+          - notes/fsharp_03.qmd
+          - notes/fsharp_04.qmd
+          - notes/fsharp_05.qmd
+          - notes/fsharp_06.qmd
+          - notes/fsharp_07.qmd
+          - notes/fsharp_08.qmd
+          - notes/fsharp_09.qmd
+          - notes/fsharp_10.qmd
+          - notes/fsharp_11.qmd
+          - notes/fsharp_12.qmd
+          - notes/fsharp_13.qmd
+          - notes/fsharp_14.qmd
 
 bibliography: references.bib
 

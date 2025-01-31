@@ -1,0 +1,256 @@
+---
+title: 조건식과 패턴 매칭
+subtitle: Pattern or Conditional
+description: |
+ F#에서는 `if-then-else` 조건식과 `match` 패턴 매칭을 활용하여 프로그램의 실행 흐름을 제어하며, 튜플, 리스트, 액티브 패턴을 통한 정교한 데이터 처리가 가능합니다. 또한, `try-with` 및 `try-finally`를 활용한 예외 처리와 함께 `Option` 및 `Result` 타입을 사용한 함수형 오류 처리 방식을 장려하여 안정적이고 예측 가능한 코드를 작성할 수 있습니다.
+categories:
+  - Pattern Matching
+  - Conditional Expressions
+execute:
+  eval: false
+---
+
+### 1. 조건식 및 논리 (Conditional Expressions and Logic)
+
+* F#에서 조건식은 `if-then-else` 표현식을 사용하여 프로그램의 실행 흐름을 제어합니다.
+* `if-then-else` 표현식은 조건을 평가하고 true 또는 false 여부에 따라 두 코드 블록 중 하나를 실행합니다.
+* F#은 조건식의 두 분기가 동일한 타입을 반환하도록 강제하여 타입 안전성과 일관성을 유지합니다.
+* `match` 표현식은 더 복잡한 조건부 논리를 위한 패턴 매칭을 제공합니다.
+
+#### if-then-else
+
+```fsharp
+// if-then-else 기본 구문
+let checkNumber num =
+    if num > 0 then
+        "Positive"
+    elif num < 0 then
+        "Negative"
+    else
+        "Zero"
+
+printfn "checkNumber 5 = %s" (checkNumber 5)
+```
+
+#### 중첩 조건
+
+```fsharp
+// 중첩 조건 (Nested Conditions)
+let categorizeNumber num =
+    if num < 0 then
+        "Negative"
+    elif num = 0 then
+        "Zero"
+    else
+        if num % 2 = 0 then
+            "Positive Even"
+        else
+            "Positive Odd"
+
+printfn "categorizeNumber 4 = %s" (categorizeNumber 4)
+```
+
+#### if-then-else 표현식
+
+```fsharp
+// 표현식으로서의 if-then-else (if-then-else as Expressions)
+let max x y =
+    if x > y then x
+    else y
+
+// 입력 값 검증 (Validation)
+let validateAge age =
+    if age >= 0 && age <= 120 then
+        "Valid age"
+    else
+        "Invalid age"
+
+// 비즈니스 로직 (Business Logic)
+let applyDiscount price isMember =
+    if isMember then
+        price * 0.9  // 10% 할인
+    else
+        price
+
+// 구성 (Configuration)
+let getLogLevel isDebug =
+    if isDebug then
+        "Debug"
+    else
+        "Info"
+
+printfn "max 10 20 = %d" (max 10 20)
+printfn "validateAge 150 = %s" (validateAge 150)
+printfn "applyDiscount 100.0 true = %f" (applyDiscount 100.0 true)
+printfn "getLogLevel true = %s" (getLogLevel true)
+```
+
+#### 패턴매칭과 결합
+
+```fsharp
+// 다른 구문과 결합 (Combining with Other Constructs)
+let describeNumber num =
+    match num with
+    | x when x < 0 -> "Negative"
+    | x when x = 0 -> "Zero"
+    | x when x % 2 = 0 -> "Positive Even"
+    | _ -> "Positive Odd"
+
+// 에러 처리 및 엣지 케이스 (Error Handling and Edge Cases)
+let safeDivide numerator denominator =
+    if denominator = 0 then
+        "Error: Division by zero"
+    else
+        string (numerator / denominator)
+
+// 결과 출력
+printfn "describeNumber 7 = %s" (describeNumber 7)
+printfn "safeDivide 10 0 = %s" (safeDivide 10 0)
+```
+
+### 2. 튜플, 리스트 및 액티브 패턴을 사용한 패턴 매칭 (Pattern Matching with Tuples, Lists, and Active Patterns)
+
+* F#의 패턴 매칭은 단순한 값 비교를 넘어 튜플, 리스트와 같은 더 복잡한 데이터 구조를 처리하도록 확장됩니다.
+* **튜플(tuples)** 을 사용한 패턴 매칭은 여러 값이 함께 묶여 있는 작업에 유용합니다.
+* **리스트(lists)** 의 경우 패턴 매칭을 사용하여 빈 리스트, 특정 헤드 및 테일 요소가 있는 리스트와 같은 경우를 처리할 수 있습니다.
+* **액티브 패턴(active patterns)** 은 복잡한 매칭 시나리오를 단순화하고 구성할 수 있는 사용자 정의 패턴을 정의하는 방법을 제공합니다.
+
+```fsharp
+// 튜플을 사용한 패턴 매칭 (Pattern Matching with Tuples)
+let myTuple = (1, "apple", true)
+
+let describeTuple t =
+    match t with
+    | (1, _, true) -> "Tuple with first element 1 and last element true"
+    | (x, y, _) -> sprintf "Tuple with first element %d and second element %s" x y
+
+// 리스트를 사용한 패턴 매칭 (Pattern Matching with Lists)
+let myList = [1; 2; 3; 4; 5]
+
+let rec describeList lst =
+    match lst with
+    | [] -> "Empty list"
+    | [x] -> sprintf "Single element list: %d" x
+    | head :: tail -> sprintf "Head is %d, tail is a list of %d elements" head (List.length tail)
+
+// 액티브 패턴 (Active Patterns)
+let (|Even|Odd|) input =
+    if input % 2 = 0 then Even else Odd
+
+let describeNumber n =
+    match n with
+    | Even -> sprintf "%d is even" n
+    | Odd -> sprintf "%d is odd" n
+
+// 튜플, 리스트, 액티브 패턴 결합 (Combining Tuples, Lists, and Active Patterns)
+let (|EvenLengthList|OddLengthList|) lst =
+    if List.length lst % 2 = 0 then EvenLengthList lst else OddLengthList lst
+
+let processList lst =
+    match lst with
+    | EvenLengthList [] -> "Empty even-length list"
+    | OddLengthList [x] -> sprintf "Odd-length list with single element: %d" x
+    | EvenLengthList (head1 :: head2 :: _) -> sprintf "Even-length list, first two elements: %d, %d" head1 head2
+    | OddLengthList (head :: tail) -> sprintf "Odd-length list, head is %d, tail length is %d" head (List.length tail)
+
+// 결과 출력
+printfn "describeTuple myTuple = %s" (describeTuple myTuple)
+printfn "describeList myList = %s" (describeList myList)
+printfn "describeNumber 4 = %s" (describeNumber 4)
+printfn "processList [1; 2; 3; 4; 5] = %s" (processList [1; 2; 3; 4; 5])
+```
+
+### 3. F#의 에러 처리 및 예외 (Error Handling and Exceptions in F#)
+
+* F#의 오류 처리는 함수형 및 명령형 접근 방식을 모두 통해 해결됩니다.
+* `try-with` 표현식은 예외를 처리하는 데 사용되며, 런타임 오류를 포착하고 대응하는 방법을 제공합니다.
+* `try-finally` 표현식은 예외 발생 여부에 관계없이 코드가 실행되도록 보장하여 리소스 관리에 유용합니다.
+* F#은 기존 예외 처리 대신 `Option` 타입과 `Result` 타입과 같은 함수형 프로그래밍 구조를 사용하여 오류를 처리하는 것을 장려합니다.
+
+```fsharp
+open System.IO
+open System.Net.Http
+
+// try-finally를 사용한 기본 오류 처리 (Basic Error Handling with try-finally)
+let processFile filePath =
+    let fileStream = new FileStream(filePath, FileMode.Open)
+    try
+        // 파일 작업 수행
+        use reader = new StreamReader(fileStream)
+        let content = reader.ReadToEnd()
+        printfn "File content:\n%s" content
+    finally
+        // 파일이 항상 닫히도록 보장
+        fileStream.Close()
+
+// try-with를 사용한 예외 처리 (Exception Handling with try-with)
+let readNumberFromFile filePath =
+    try
+        let text = File.ReadAllText(filePath)
+        let number = Int32.Parse(text)
+        printfn "Number read: %d" number
+    with
+    | :? FormatException -> printfn "The file does not contain a valid number."
+    | :? FileNotFoundException -> printfn "The file was not found."
+    | ex -> printfn "An unexpected error occurred: %s" (ex.Message)
+
+// 비동기 코드의 예외 처리 (Handling Exceptions in Asynchronous Code)
+let fetchContentAsync url =
+    async {
+        try
+            let! client = Async.StartAsTask (fun () -> async { return new HttpClient() })
+            let! response = client.GetStringAsync(url) |> Async.AwaitTask
+            printfn "Content fetched successfully"
+            return response
+        with
+        | :? HttpRequestException as ex ->
+            printfn "HTTP request failed: %s" (ex.Message)
+            return ""
+        | ex ->
+            printfn "An unexpected error occurred: %s" (ex.Message)
+            return ""
+    }
+
+// 함수형 프로그래밍의 오류 처리 (Error Handling in Functional Programming)
+type Result<'T, 'E> =
+    | Ok of 'T
+    | Error of 'E
+
+let divide x y =
+    if y = 0 then Error "Division by zero"
+    else Ok (x / y)
+
+let safeDivide x y =
+    match divide x y with
+    | Ok result -> printfn "Result: %d" result
+    | Error msg -> printfn "Error: %s" msg
+
+// Option 타입을 사용한 오류 처리
+let findElement index list =
+    if index >= 0 && index < List.length list then Some (List.item index list)
+    else None
+
+let processElement index list =
+    match findElement index list with
+    | Some element -> printfn "Element: %d" element
+    | None -> printfn "Element not found"
+
+// 예외 처리와 함수형 구조 결합 (Combining Exception Handling with Functional Constructs)
+let parseInt str =
+    try
+        Some (Int32.Parse(str))
+    with
+    | :? FormatException -> None
+
+let processNumber str =
+    match parseInt str with
+    | Some number -> printfn "Parsed number: %d" number
+    | None -> printfn "Failed to parse number"
+
+// 결과 출력
+processFile "example.txt" // "example.txt" 파일이 프로젝트 폴더에 있어야 함
+readNumberFromFile "example.txt" // "example.txt" 파일이 프로젝트 폴더에 있어야 함
+safeDivide 10 0
+processElement 10 [1; 2; 3]
+processNumber "abc"
+```
