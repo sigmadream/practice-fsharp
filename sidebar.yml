@@ -1,0 +1,8 @@
+website:
+  sidebar:
+    contents:
+      - notes/fsharp01.qmd
+      - notes/fsharp02.qmd
+      - notes/fsharp03.qmd
+      - notes/fsharp04.qmd
+      - notes/fsharp05.qmd
