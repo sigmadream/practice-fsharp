@@ -1,0 +1,259 @@
+---
+title: 병렬 프로그래밍
+subtitle: Parallel Programming
+description: |
+ F#에서의 병렬 프로그래밍은 멀티코어 프로세서의 성능을 극대화하기 위해 여러 작업을 동시에 처리하는 패러다임으로, Task, Parallel API, Async 워크플로우 등 다양한 도구와 병렬 컬렉션(예: Array.Parallel.map)을 제공한다. 이를 통해 대규모 데이터셋이나 복잡한 계산을 여러 코어에서 동시에 수행하여 실행 시간을 단축할 수 있으며, 병렬 정렬, 맵/리듀스, 파이프라인 등 다양한 알고리즘 및 구조로 확장 가능하다. 또한 태스크 단위의 적절한 분할, 동기화 오버헤드 최소화, 자원 사용 제어 등을 고려해 성능을 최적화해야 하며, 프로파일링 툴을 활용해 병목 지점을 파악하는 것이 중요하다. 결론적으로 병렬 프로그래밍은 F# 애플리케이션에 높은 처리량과 빠른 응답성을 제공해, 멀티코어 시대에 효율적인 코드를 작성할 수 있는 핵심 기법이다.
+categories:
+  - Parallel
+execute:
+  eval: false
+---
+
+## 병렬성과 동시성(Parallelism vs. Concurrency)
+
+### 병렬성(Parallelism)
+
+- 여러 작업(태스크)을 **동시에** 실행하여 **처리 속도**를 높이는 개념
+- **멀티코어** 프로세서를 활용해 대규모 계산을 빠르게 수행
+    - 대규모 데이터 처리 시, 리스트를 여러 조각으로 나누어 동시에 처리
+
+```fsharp
+open System
+open System.Threading.Tasks
+
+// 간단한 예: 데이터 처리(2배 연산) 시뮬레이션
+let processData (x: int) =
+    // 가상으로 시간을 소모
+    Threading.Thread.Sleep(1000)
+    x * 2
+
+// 리스트를 병렬 처리하는 함수
+let processDataInParallel (data: int list) : int list =
+    data
+    // 각각 Task로 실행
+    |> List.map (fun item -> Task.Run(fun () -> processData item))
+    // 모든 Task가 끝날 때까지 대기
+    |> Task.WhenAll
+    // Task 결과(배열)를 List로 변환 (Task.map은 별도 유틸 or 직접 구현)
+    |> fun tasks -> tasks.Result |> Array.toList
+
+// 사용 예시
+let numbers = [1; 2; 3; 4; 5]
+let results = processDataInParallel numbers
+printfn "결과: %A" results
+```
+
+### 동시성(Concurrency)
+
+- 여러 작업을 **겹치는 시점**에 진행하지만, 실제로는 시분할 혹은 스레드 스케줄링을 통해 실행 가능.
+- 병렬성을 반드시 의미하지 않을 수 있으며, 주로 **I/O 처리, 사용자 요청** 등에서 유연한 태스크 관리를 제공.
+    - 웹 서버가 여러 클라이언트 요청을 "동시에" 처리하나, 실제로는 한정된 CPU 자원을 스케줄링.
+
+```fsharp
+open System
+open System.Threading.Tasks
+
+// 요청 처리 시뮬레이션
+let handleRequest (id: int) : Task =
+    async {
+        printfn "요청 %d 처리 시작" id
+        do! Task.Delay(1000) |> Async.AwaitTask
+        printfn "요청 %d 처리 완료" id
+    } |> Async.StartAsTask
+
+// 여러 요청 동시 처리
+let handleRequestsConcurrently (ids: int list) : Task =
+    ids
+    |> List.map handleRequest
+    |> Task.WhenAll
+
+// 사용 예시
+let reqIds = [1; 2; 3; 4; 5]
+let tasks = handleRequestsConcurrently reqIds
+tasks.Wait()
+```
+
+## 병렬 알고리즘 및 데이터 처리
+
+### 병렬 정렬(Parallel Sorting)
+
+- 배열을 절반으로 나누어 각각을 재귀적으로 정렬한 뒤, **Task**를 통해 병렬로 수행.
+
+```fsharp
+open System
+open System.Threading.Tasks
+
+// 두 정렬된 배열을 머지
+let merge (left: 'a[]) (right: 'a[]) (compare: 'a -> 'a -> int) =
+    let result = Array.zeroCreate (left.Length + right.Length)
+    let mutable i, j, k = 0, 0, 0
+    while i < left.Length && j < right.Length do
+        if compare left.[i] right.[j] <= 0 then
+            result.[k] <- left.[i]
+            i <- i + 1
+        else
+            result.[k] <- right.[j]
+            j <- j + 1
+        k <- k + 1
+    while i < left.Length do
+        result.[k] <- left.[i]
+        i <- i + 1
+        k <- k + 1
+    while j < right.Length do
+        result.[k] <- right.[j]
+        j <- j + 1
+        k <- k + 1
+    result
+
+// 병렬 머지 정렬 함수
+let rec parallelMergeSort (arr: 'a[]) (compare: 'a -> 'a -> int) =
+    if arr.Length <= 1 then arr
+    else
+        let mid = arr.Length / 2
+        let left = arr.[0..mid-1]
+        let right = arr.[mid..]
+
+        let leftTask = Task.Run(fun () -> parallelMergeSort left compare)
+        let rightTask = Task.Run(fun () -> parallelMergeSort right compare)
+
+        Task.WaitAll(leftTask, rightTask)
+        merge leftTask.Result rightTask.Result compare
+
+// 사용 예시
+let data = [|5; 2; 9; 1; 5; 6|]
+let sortedData = parallelMergeSort data compare
+printfn "정렬 결과: %A" sortedData
+```
+
+### 병렬 맵/리듀스(Parallel Map/Reduce)
+
+- F#에서는 `Array.Parallel` 또는 `Seq.Parallel` 모듈을 활용해 병렬 연산을 수행할 수 있음.
+
+```fsharp
+open System
+
+// 병렬 map
+let parallelMap (data: 'a[]) (mapping: 'a -> 'b) =
+    data |> Array.Parallel.map mapping
+
+// 병렬 reduce
+let parallelReduce (data: 'a[]) (reduction: 'a -> 'a -> 'a) =
+    data |> Array.Parallel.reduce reduction
+
+// 사용 예시
+let numbers = [|1; 2; 3; 4; 5|]
+let squared = parallelMap numbers (fun x -> x * x)
+let sum = parallelReduce squared (fun x y -> x + y)
+printfn "제곱 값: %A, 합계: %d" squared sum
+```
+
+## 병렬 컬렉션과 파이프라인(Parallel Collections & Pipelines)
+
+### 병렬 컬렉션
+
+- **Array.Parallel**, **Seq.Parallel** 등을 이용하면, map/filter/fold 등의 연산을 병렬로 수행.
+- 큰 데이터셋에 대해 연산을 병렬화하여 처리 시간을 단축 가능.
+
+```fsharp
+open System
+
+let processElement (x: int) =
+    // 가상의 연산 비용
+    Threading.Thread.Sleep(100)
+    x * x
+
+let filterEven (x: int) = x % 2 = 0
+
+let processCollectionInParallel (data: int[]) =
+    data
+    |> Array.Parallel.map processElement
+    |> Array.Parallel.filter filterEven
+
+let data = [|1; 2; 3; 4; 5; 6|]
+let results = processCollectionInParallel data
+printfn "병렬 처리 결과: %A" results
+```
+
+### 파이프라인(Parallel Pipeline)
+
+- 여러 단계를 거치는 데이터를 병렬로 처리 (각 단계도 병렬화).
+- 각 단계(stage)를 `Array.Parallel.map` 등으로 연결하여 성능 향상.
+
+```fsharp
+let stage1 x =
+    Threading.Thread.Sleep(100)
+    x + 1
+
+let stage2 x =
+    Threading.Thread.Sleep(100)
+    x * 2
+
+let parallelPipeline (data: int[]) =
+    data
+    |> Array.Parallel.map stage1
+    |> Array.Parallel.map stage2
+
+let pipelineResult = parallelPipeline [|1; 2; 3|]
+printfn "파이프라인 결과: %A" pipelineResult
+```
+
+## 병렬 애플리케이션 성능 최적화
+
+병렬 코드 작성 시, 다음 요소들을 고려하면 효과적인 성능 향상을 고려할 수 있습니다.
+
+### 태스크 단위(Task Granularity)
+
+- 너무 작은 단위로 작업을 나누면, 스레드/태스크 관리 오버헤드가 커짐.
+- 너무 큰 단위면, 병렬 효율이 떨어짐.
+- **적절한 청크(chunk) 크기**를 설정해 병렬 처리 성능 극대화.
+
+```fsharp
+let processChunk (chunk: int[]) = chunk |> Array.sum
+
+let processDataInParallel (data: int[]) (chunkSize: int) =
+    let chunks =
+        data
+        |> Array.chunkBySize chunkSize
+        |> Array.map (fun c -> Task.Run(fun () -> processChunk c))
+    chunks
+    |> Task.WhenAll
+    |> fun t -> t.Result |> Array.sum
+
+let largeData = Array.init 1000 id
+let smallChunks = processDataInParallel largeData 10
+let largeChunks = processDataInParallel largeData 100
+```
+
+### 동기화 오버헤드(Synchronization Overhead) 최소화
+- 공유 데이터 접근 시 **lock** 사용 또는 뮤텍스, 세마포어 등이 필요.
+- lock을 과도하게 사용하면 병렬 이점이 줄어듦.
+- 가능하다면 불변 데이터 구조나 데이터 사본을 이용해 락 프리(lock-free) 설계를 시도.
+
+```fsharp
+let mutable counter = 0
+let counterLock = obj()
+
+let incrementCounter (data: int[]) =
+    Array.Parallel.iter (fun _ ->
+        lock counterLock (fun () ->
+            counter <- counter + 1
+        )
+    ) data
+```
+
+### 자원 사용 효율화(Resource Management)
+
+- CPU, 메모리를 너무 많이 사용하는 병렬 태스크는 역효과가 날 수 있음.
+- **MaxDegreeOfParallelism** 등을 통해 동시 실행 스레드 수를 제한하기도 함.
+- 대규모 태스크 시, TPL Dataflow 등의 고급 라이브러리를 검토.
+
+### 4.4 알고리즘 효율(Algorithmic Efficiency)
+
+- 병렬화에 적합한 알고리즘인지 확인 (의존성이 적고 독립적으로 처리 가능한 부분이 많은가?).
+- 예: 순차 vs. 병렬 합산, 머지 소트 등.  
+- 불필요한 중복 계산이나 메모리 이동 최소화.
+
+### 프로파일링 & 벤치마킹
+
+- Visual Studio Profiler, PerfView 등 **프로파일링 툴** 사용.
+- 병목(bottleneck) 지점을 파악 후 최적화.
